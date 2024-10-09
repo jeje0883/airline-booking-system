@@ -75,128 +75,264 @@ const commercialFlightController = {
 
 
     // Add multiple commercial flights
+    // async addMultipleCommercialFlights(req, res) {
+    //   try {
+    //     console.log('Received request to add multiple commercial flights:', JSON.stringify(req.body, null, 2)); // Detailed Debugging
+  
+    //     const flightsToAdd = req.body.flights; // Assuming the array is sent as `flights`
+    //     if (!Array.isArray(flightsToAdd) || flightsToAdd.length === 0) {
+    //       console.log('No flights provided in the request body.'); // Debugging
+    //       return res.status(400).json({ message: 'No flights provided' });
+    //     }
+  
+    //     const newFlights = [];
+    //     const alreadyExist = [];
+    //     const errors = [];
+  
+    //     // Iterate over each flight to check if it already exists
+    //     for (const flightData of flightsToAdd) {
+    //       const { flightId, priceId, date, departureTime } = flightData;
+    //       console.log(`Processing flight data: ${JSON.stringify(flightData)}`); // Debugging
+  
+    //       // Ensure all required fields are present
+    //       if (!flightId || !priceId || !date || !departureTime) {
+    //         console.log(`Missing required fields in flight data: ${JSON.stringify(flightData)}`); // Debugging
+    //         errors.push({ flightId, message: 'Missing required fields' });
+    //         continue; // Skip to the next flight
+    //       }
+  
+    //       // Ensure date and departureTime are in correct formats
+    //       if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    //         console.log(`Invalid date format for flight ID ${flightId}: ${date}`); // Debugging
+    //         errors.push({ flightId, message: `Invalid date format: ${date}` });
+    //         continue; // Skip to the next flight
+    //       }
+    //       if (!/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(departureTime)) {
+    //         console.log(`Invalid departureTime format for flight ID ${flightId}: ${departureTime}`); // Debugging
+    //         errors.push({ flightId, message: `Invalid departureTime format: ${departureTime}` });
+    //         continue; // Skip to the next flight
+    //       }
+  
+    //       // Check if a commercial flight with the same flight, date, and departureTime already exists
+    //       const existingFlight = await CommercialFlight.findOne({
+    //         flight: flightId,
+    //         date: date, // Compare date as string
+    //         departureTime: departureTime, // Direct string comparison
+    //       });
+  
+    //       if (existingFlight) {
+    //         console.log(`Flight already exists: ${JSON.stringify(existingFlight)}`); // Debugging
+    //         // If the flight already exists, add it to the alreadyExist array
+    //         alreadyExist.push({ id: existingFlight._id, flight: flightId, date, departureTime });
+    //       } else {
+    //         try {
+    //           // Fetch the Flight object
+    //           const flightDoc = await Flight.findById(flightId).populate('airplane');
+    //           if (!flightDoc) {
+    //             console.log(`Flight document not found for ID ${flightId}`); // Debugging
+    //             errors.push({ flightId, message: `Flight not found for ID ${flightId}` });
+    //             continue; // Skip to the next flight
+    //           }
+  
+    //           // Fetch the Airplane object
+    //           const airplaneData = await Airplane.findById(flightDoc.airplane);
+    //           if (!airplaneData) {
+    //             console.log(`Airplane document not found for flight ID ${flightId}`); // Debugging
+    //             errors.push({ flightId, message: `Airplane not found for flight ID ${flightId}` });
+    //             continue; // Skip to the next flight
+    //           }
+  
+    //           // Set availableSeats from airplane seat data
+    //           const availableSeats = {
+    //             totalSeats: airplaneData.totalSeats,
+    //             economySeat: airplaneData.economySeat,
+    //             premiumSeat: airplaneData.premiumSeat,
+    //             businessSeat: airplaneData.businessSeat,
+    //             firstClass: airplaneData.firstClass,
+    //           };
+  
+    //           // Prepare the flight data to be added
+    //           const newFlightData = {
+    //             flight: flightId,
+    //             pricing: priceId,
+    //             date: date, // Store date as a string
+    //             departureTime, // Store the time as a string
+    //             availableSeats,
+    //           };
+  
+    //           console.log(`Prepared new flight data for insertion: ${JSON.stringify(newFlightData)}`); // Debugging
+  
+    //           newFlights.push(newFlightData);
+    //         } catch (err) {
+    //           console.log(`Error processing flight ID ${flightId}: ${err.message}`); // Debugging
+    //           errors.push({ flightId, message: err.message });
+    //           continue; // Skip to the next flight
+    //         }
+    //       }
+    //     }
+  
+    //     console.log(`Total new flights to insert: ${newFlights.length}`); // Debugging
+    //     console.log(`Flights that already exist: ${alreadyExist.length}`); // Debugging
+    //     console.log(`Errors encountered: ${errors.length}`); // Debugging
+  
+    //     // Add new flights to the database
+    //     let savedCommercialFlights = [];
+    //     if (newFlights.length > 0) {
+    //       try {
+    //         savedCommercialFlights = await CommercialFlight.insertMany(newFlights);
+    //         console.log('New commercial flights saved:', JSON.stringify(savedCommercialFlights, null, 2)); // Debugging
+    //       } catch (insertError) {
+    //         console.error('Error inserting new flights:', insertError); // Debugging
+    //         errors.push({ message: 'Error inserting new flights', details: insertError.message });
+    //       }
+    //     } else {
+    //       console.log('No new commercial flights to add after processing.'); // Debugging
+    //     }
+  
+    //     // Return the added flights, already existing flights, and any errors in the response
+    //     res.status(201).json({
+    //       added: savedCommercialFlights,
+    //       alreadyExist: alreadyExist,
+    //       errors: errors,
+    //     });
+    //   } catch (error) {
+    //     console.error('Error adding multiple commercial flights:', error); // Debugging
+    //     res.status(500).json({ message: 'Error adding multiple commercial flights', error });
+    //   }
+    // },
     async addMultipleCommercialFlights(req, res) {
       try {
-        console.log('Received request to add multiple commercial flights:', JSON.stringify(req.body, null, 2)); // Detailed Debugging
-  
+        console.log('Received request to add multiple commercial flights:', JSON.stringify(req.body, null, 2));
+    
         const flightsToAdd = req.body.flights; // Assuming the array is sent as `flights`
         if (!Array.isArray(flightsToAdd) || flightsToAdd.length === 0) {
-          console.log('No flights provided in the request body.'); // Debugging
+          console.log('No flights provided in the request body.');
           return res.status(400).json({ message: 'No flights provided' });
         }
-  
+    
         const newFlights = [];
         const alreadyExist = [];
         const errors = [];
-  
-        // Iterate over each flight to check if it already exists
+    
         for (const flightData of flightsToAdd) {
           const { flightId, priceId, date, departureTime } = flightData;
-          console.log(`Processing flight data: ${JSON.stringify(flightData)}`); // Debugging
-  
-          // Ensure all required fields are present
+          console.log(`Processing flight data: ${JSON.stringify(flightData)}`);
+    
+          // Validate required fields
           if (!flightId || !priceId || !date || !departureTime) {
-            console.log(`Missing required fields in flight data: ${JSON.stringify(flightData)}`); // Debugging
+            console.log(`Missing required fields in flight data: ${JSON.stringify(flightData)}`);
             errors.push({ flightId, message: 'Missing required fields' });
-            continue; // Skip to the next flight
+            continue;
           }
-  
-          // Ensure date and departureTime are in correct formats
+    
+          // Validate date and time formats
           if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-            console.log(`Invalid date format for flight ID ${flightId}: ${date}`); // Debugging
+            console.log(`Invalid date format for flight ID ${flightId}: ${date}`);
             errors.push({ flightId, message: `Invalid date format: ${date}` });
-            continue; // Skip to the next flight
+            continue;
           }
           if (!/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(departureTime)) {
-            console.log(`Invalid departureTime format for flight ID ${flightId}: ${departureTime}`); // Debugging
+            console.log(`Invalid departureTime format for flight ID ${flightId}: ${departureTime}`);
             errors.push({ flightId, message: `Invalid departureTime format: ${departureTime}` });
-            continue; // Skip to the next flight
+            continue;
           }
-  
-          // Check if a commercial flight with the same flight, date, and departureTime already exists
+    
+          // Fetch Flight document
+          const flightDoc = await Flight.findById(flightId);
+          if (!flightDoc) {
+            console.log(`Flight not found for ID ${flightId}`);
+            errors.push({ flightId, message: `Flight not found for ID ${flightId}` });
+            continue;
+          }
+    
+          // Fetch Pricing document
+          const pricingDoc = await Pricing.findById(priceId);
+          if (!pricingDoc) {
+            console.log(`Pricing not found for ID ${priceId}`);
+            errors.push({ priceId, message: `Pricing not found for ID ${priceId}` });
+            continue;
+          }
+    
+          // Check for existing CommercialFlight
           const existingFlight = await CommercialFlight.findOne({
-            flight: flightId,
-            date: date, // Compare date as string
-            departureTime: departureTime, // Direct string comparison
+            'flight._id': flightDoc._id,
+            date: date,
+            departureTime: departureTime,
           });
-  
+    
           if (existingFlight) {
-            console.log(`Flight already exists: ${JSON.stringify(existingFlight)}`); // Debugging
-            // If the flight already exists, add it to the alreadyExist array
+            console.log(`Flight already exists: ${JSON.stringify(existingFlight)}`);
             alreadyExist.push({ id: existingFlight._id, flight: flightId, date, departureTime });
           } else {
             try {
-              // Fetch the Flight object
-              const flightDoc = await Flight.findById(flightId).populate('airplane');
-              if (!flightDoc) {
-                console.log(`Flight document not found for ID ${flightId}`); // Debugging
-                errors.push({ flightId, message: `Flight not found for ID ${flightId}` });
-                continue; // Skip to the next flight
-              }
-  
-              // Fetch the Airplane object
-              const airplaneData = await Airplane.findById(flightDoc.airplane);
-              if (!airplaneData) {
-                console.log(`Airplane document not found for flight ID ${flightId}`); // Debugging
-                errors.push({ flightId, message: `Airplane not found for flight ID ${flightId}` });
-                continue; // Skip to the next flight
-              }
-  
-              // Set availableSeats from airplane seat data
-              const availableSeats = {
-                totalSeats: airplaneData.totalSeats,
-                economySeat: airplaneData.economySeat,
-                premiumSeat: airplaneData.premiumSeat,
-                businessSeat: airplaneData.businessSeat,
-                firstClass: airplaneData.firstClass,
-              };
-  
-              // Prepare the flight data to be added
+              // Prepare embedded flight data
+              const embeddedFlight = flightDoc.toObject();
+              // Remove Mongoose-specific properties
+              delete embeddedFlight.__v;
+              delete embeddedFlight.createdAt;
+              delete embeddedFlight.updatedAt;
+    
+              // Prepare embedded pricing data
+              const embeddedPricing = pricingDoc.toObject();
+              delete embeddedPricing.__v;
+    
+              // Prepare availableSeats from airplane data
+              const availableSeats = flightDoc.airplane
+                ? {
+                    totalSeats: flightDoc.airplane.totalSeats,
+                    economySeat: flightDoc.airplane.economySeat,
+                    premiumSeat: flightDoc.airplane.premiumSeat,
+                    businessSeat: flightDoc.airplane.businessSeat,
+                    firstClass: flightDoc.airplane.firstClass,
+                  }
+                : null;
+    
+              // New CommercialFlight data
               const newFlightData = {
-                flight: flightId,
-                pricing: priceId,
-                date: date, // Store date as a string
-                departureTime, // Store the time as a string
-                availableSeats,
+                flight: embeddedFlight,
+                pricing: embeddedPricing,
+                date: date,
+                departureTime: departureTime,
+                availableSeats: availableSeats,
               };
-  
-              console.log(`Prepared new flight data for insertion: ${JSON.stringify(newFlightData)}`); // Debugging
-  
+    
+              console.log(`Prepared new flight data for insertion: ${JSON.stringify(newFlightData)}`);
+    
               newFlights.push(newFlightData);
             } catch (err) {
-              console.log(`Error processing flight ID ${flightId}: ${err.message}`); // Debugging
+              console.log(`Error processing flight ID ${flightId}: ${err.message}`);
               errors.push({ flightId, message: err.message });
-              continue; // Skip to the next flight
+              continue;
             }
           }
         }
-  
-        console.log(`Total new flights to insert: ${newFlights.length}`); // Debugging
-        console.log(`Flights that already exist: ${alreadyExist.length}`); // Debugging
-        console.log(`Errors encountered: ${errors.length}`); // Debugging
-  
-        // Add new flights to the database
+    
+        console.log(`Total new flights to insert: ${newFlights.length}`);
+        console.log(`Flights that already exist: ${alreadyExist.length}`);
+        console.log(`Errors encountered: ${errors.length}`);
+    
+        // Insert new flights
         let savedCommercialFlights = [];
         if (newFlights.length > 0) {
           try {
             savedCommercialFlights = await CommercialFlight.insertMany(newFlights);
-            console.log('New commercial flights saved:', JSON.stringify(savedCommercialFlights, null, 2)); // Debugging
+            console.log('New commercial flights saved:', JSON.stringify(savedCommercialFlights, null, 2));
           } catch (insertError) {
-            console.error('Error inserting new flights:', insertError); // Debugging
+            console.error('Error inserting new flights:', insertError);
             errors.push({ message: 'Error inserting new flights', details: insertError.message });
           }
         } else {
-          console.log('No new commercial flights to add after processing.'); // Debugging
+          console.log('No new commercial flights to add after processing.');
         }
-  
-        // Return the added flights, already existing flights, and any errors in the response
+    
+        // Response
         res.status(201).json({
           added: savedCommercialFlights,
           alreadyExist: alreadyExist,
           errors: errors,
         });
       } catch (error) {
-        console.error('Error adding multiple commercial flights:', error); // Debugging
+        console.error('Error adding multiple commercial flights:', error);
         res.status(500).json({ message: 'Error adding multiple commercial flights', error });
       }
     },

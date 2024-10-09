@@ -1,44 +1,109 @@
 const mongoose = require('mongoose'); // Import mongoose to use ObjectId validation
 const Flight = require('../models/Flight'); // Ad
+const Airplane = require('../models/Airplane');
+const Route = require('../models/Route');
 
 // Controller for Flight Operations
 const FlightController = {
   
   // Add a new flight
+  // async addFlight(req, res) {
+  //   try {
+  //     const { flightNo, airplane, route, days, time } = req.body;
+  //     console.log('Add Flight Request:', req.body); // Debugging input data
+
+  //     // Validate required fields
+  //     if (!flightNo || !airplane || !route || !days || !time) {
+  //       console.log('Missing required fields'); // Debugging
+  //       return res.status(400).json({ message: 'Missing required fields' });
+  //     }
+
+  //     const newFlight = new Flight({
+  //       flightNo,
+  //       airplane,
+  //       route,
+  //       days,
+  //       time
+  //     });
+
+  //     const savedFlight = await newFlight.save();
+  //     console.log('Saved Flight:', savedFlight); // Debugging saved flight
+
+  //     const populatedFlight = await Flight.findById(savedFlight._id)
+  //       .populate('airplane')
+  //       .populate({
+  //         path: 'route',
+  //         populate: [
+  //           { path: 'departure', model: 'Airport' },
+  //           { path: 'destination', model: 'Airport' },
+  //         ],
+  //       });
+
+  //     console.log('Populated Flight:', populatedFlight); // Debugging populated flight
+  //     res.status(201).json(populatedFlight);
+  //   } catch (error) {
+  //     console.error('Error adding flight:', error);
+  //     res.status(500).json({ message: 'Error adding flight', error });
+  //   }
+  // },
+
   async addFlight(req, res) {
     try {
-      const { flightNo, airplane, route, days, time } = req.body;
+      const { flightNo, airplane: airplaneId, route: routeId, days, time } = req.body;
       console.log('Add Flight Request:', req.body); // Debugging input data
-
+  
       // Validate required fields
-      if (!flightNo || !airplane || !route || !days || !time) {
+      if (!flightNo || !airplaneId || !routeId || !days || !time) {
         console.log('Missing required fields'); // Debugging
         return res.status(400).json({ message: 'Missing required fields' });
       }
-
+  
+      // Fetch the Airplane document by ID
+      const airplane = await Airplane.findById(airplaneId).lean();
+      if (!airplane) {
+        return res.status(404).json({ message: 'Airplane not found' });
+      }
+  
+      // Fetch the Route document by ID
+      const route = await Route.findById(routeId).lean();
+      if (!route) {
+        return res.status(404).json({ message: 'Route not found' });
+      }
+  
+      // Prepare the embedded Route data
+      const embeddedRoute = {
+        departure: {
+          airportName: route.departureAirportName,
+          airportCode: route.departureAirportCode,
+          airportCity: route.departureAirportCity,
+          airportCountry: route.departureAirportCountry,
+          isActive: route.isActive
+        },
+        destination: {
+          airportName: route.destinationAirportName,
+          airportCode: route.destinationAirportCode,
+          airportCity: route.destinationAirportCity,
+          airportCountry: route.destinationAirportCountry,
+          isActive: route.isActive
+        },
+        distanceKM: route.distanceKM,
+        durationMins: route.durationMins,
+        isActive: route.isActive
+      };
+  
+      // Create new Flight with embedded data
       const newFlight = new Flight({
         flightNo,
         airplane,
-        route,
+        route: embeddedRoute,
         days,
         time
       });
-
+  
       const savedFlight = await newFlight.save();
       console.log('Saved Flight:', savedFlight); // Debugging saved flight
-
-      const populatedFlight = await Flight.findById(savedFlight._id)
-        .populate('airplane')
-        .populate({
-          path: 'route',
-          populate: [
-            { path: 'departure', model: 'Airport' },
-            { path: 'destination', model: 'Airport' },
-          ],
-        });
-
-      console.log('Populated Flight:', populatedFlight); // Debugging populated flight
-      res.status(201).json(populatedFlight);
+  
+      res.status(201).json(savedFlight);
     } catch (error) {
       console.error('Error adding flight:', error);
       res.status(500).json({ message: 'Error adding flight', error });

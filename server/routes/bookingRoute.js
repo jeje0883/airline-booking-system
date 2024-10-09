@@ -8,6 +8,8 @@ const bookingController = require('../controllers/bookingController'); // Adjust
 // Route to add a new booking
 router.post('/', bookingController.addBooking);
 
+router.get('/mybookings', verify, bookingController.viewMyBookings);
+
 // Route to get booking details by ID
 router.get('/:id', bookingController.getBookingDetails);
 
@@ -18,7 +20,7 @@ router.patch('/:id/updatepayment', bookingController.updateBookingPayment);
 // Route to view all bookings
 router.get('/', bookingController.viewAllBookings);
 
-router.post('/mybookings', verify, bookingController.viewMyBookings);
+
 
 router.patch('/:id', bookingController.checkin);
 
