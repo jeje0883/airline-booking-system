@@ -3,38 +3,6 @@ const Airport = require('../models/Airport'); // Adjust the path according to yo
 
 const routeController = {
 
-  // Add a new route
-  // async addRoute(req, res) { 
-  //   try {
-  //     const { departure, destination, distanceKM, durationMins } = req.body;
-  
-  //     // Validate airports
-  //     const departureAirport = await Airport.findById(departure);
-  //     const destinationAirport = await Airport.findById(destination);
-  
-  //     if (!departureAirport || !destinationAirport) {
-  //       return res.status(404).json({ message: 'Departure or destination airport not found' });
-  //     }
-  
-  //     const newRoute = new Route({
-  //       departure,
-  //       destination,
-  //       distanceKM,
-  //       durationMins
-  //     });
-  
-  //     const savedRoute = await newRoute.save();
-      
-  //     // Populate the departure and destination fields
-  //     const populatedRoute = await Route.findById(savedRoute._id)
-  //       .populate('departure')
-  //       .populate('destination');
-  
-  //     res.status(201).json(populatedRoute);
-  //   } catch (error) {
-  //     res.status(500).json({ message: 'Error adding route', error });
-  //   }
-  // },
 
   async addRoute(req, res) { 
     try {
