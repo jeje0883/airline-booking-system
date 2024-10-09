@@ -24,7 +24,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Setup middleware
 const corsOptions = {
-    origin: ['http://localhost:3000', frontend], // Adjust according to your frontend's URL
+    origin: [frontend, 'http://localhost:3000' ], // Adjust according to your frontend's URL
     credentials: true,
     optionsSuccessStatus: 200
 };
