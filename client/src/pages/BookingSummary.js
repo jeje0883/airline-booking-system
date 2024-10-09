@@ -1,156 +1,121 @@
-
-import React, { useEffect, useState } from 'react';  // Import useEffect and useState
-import { useLocation, useNavigate } from 'react-router-dom';  // Import useLocation and useNavigate
-import BookingSummaryTable from '../components/BookingSummaryTable';  // Import the BookingSummaryTable component
-import { BackButton, PayButton } from '../components/Buttons';  // Import BackButton and ContinueButton components
-import { Notyf } from 'notyf';  // Import Notyf
-import 'notyf/notyf.min.css';   // Import Notyf styles
-import { Spinner } from 'react-bootstrap'; 
+import React, { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import BookingSummaryTable from '../components/BookingSummaryTable';
+import { BackButton, PayButton } from '../components/Buttons';
+import { Notyf } from 'notyf';
+import 'notyf/notyf.min.css';
+import { Spinner } from 'react-bootstrap';
 
 export default function BookingSummary() {
   const notyf = new Notyf();
   const location = useLocation();
   const navigate = useNavigate();
-  const { bookingData, guestEmail } = location.state || {};
-  const { user, selectedFlight, promo, finalGuests } = bookingData;
-  const [isLoading, setIsLoading] = useState(false);  // Add loading state
-  const [isPaymentProcessing, setIsPaymentProcessing] = useState(false);  // Add payment processing state
-  
-  const totalCost = (
-    50 * (selectedFlight.flight.route.distanceKM * selectedFlight.pricing.distanceFactor + selectedFlight.pricing.basePrice)
-    * finalGuests.length - 1
-  );
+
+  const [bookingData, setBookingData] = useState(() => {
+    const stateData = location.state?.bookingData;
+    const localData = localStorage.getItem('bookingData');
+    if (stateData) {
+      localStorage.setItem('bookingData', JSON.stringify(stateData));
+      return stateData;
+    }
+    return localData ? JSON.parse(localData) : null;
+  });
+
+  const [guestEmail, setGuestEmail] = useState(() => {
+    const stateEmail = location.state?.guestEmail;
+    const localEmail = localStorage.getItem('guestEmail');
+    if (stateEmail) {
+      localStorage.setItem('guestEmail', stateEmail);
+      return stateEmail;
+    }
+    return localEmail || '';
+  });
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [isPaymentProcessing, setIsPaymentProcessing] = useState(false);
 
   useEffect(() => {
     if (!bookingData) {
       navigate('/flights');
-      setIsLoading(false);  ///////
     }
   }, [bookingData, navigate]);
 
-  // Payment redirection handling
-  const handlePaymentRedirect = (url) => {
-    window.open(url, '_blank');
-    setIsPaymentProcessing(true);  // Start payment processing
-  };
-
-  const handlePayment = () => {
-    setIsLoading(true);  // Start loading when initiating payment
-    const url = 'https://api.paymongo.com/v1/links'; //request payment link from provider
-    const options = {
-      method: 'POST',
-      headers: {
-        accept: 'application/json',
-        'content-type': 'application/json',
-        authorization: 'Basic c2tfdGVzdF9pSmU0VWFGR3Z2N2szMUZwbUNCUFhZdjY6'
-      },
-      body: JSON.stringify({ data: { attributes: { amount: totalCost, description: 'ticket' } } })
-    };
-
-    fetch(url, options)
-      .then(res => res.json())
-      .then(json => {
-        handlePaymentRedirect(json.data.attributes.checkout_url);
-
-        const statusCheckUrl = `https://api.paymongo.com/v1/links/${json.data.id}`;   //if payment link is received, redirect customer to payment link
-        const statusOptions = {
-          method: 'GET',
-          headers: {
-            accept: 'application/json',
-            authorization: 'Basic c2tfdGVzdF9pSmU0VWFGR3Z2N2szMUZwbUNCUFhZdjY6'
-          }
-        };
-
-        // Poll for the payment status
-        const checkPaymentStatus = () => {  //
-          fetch(statusCheckUrl, statusOptions)
-            .then(res => res.json())
-            .then(res => {
-              console.log('response: ',res);
-
-              if (res.data.attributes.status === "paid") {
-
-                console.log('bookind data to ticket ', bookingData);
-
-
-                navigate('/ticket', { state: { bookingData, totalCost, guestEmail } });
-                setIsLoading(false);
-                //setIsPaymentProcessing(false);  // Stop payment processing
-              } else if (res.data.attributes.status === "disrupted") {
-                navigate('/bookings');
-                setIsLoading(false);
-                //setIsPaymentProcessing(false);  // Stop payment processing
-              } else {
-                // If not completed, check again after a delay
-                setTimeout(checkPaymentStatus, 1000);  // Poll every 3 seconds
-              }
-            })
-            .catch(err => {
-              console.error('error:', err);
-              setIsLoading(false);
-              setIsPaymentProcessing(false);  // Stop loading on error
-            });
-        };
-
-        // Start polling the payment status
-        checkPaymentStatus();
-      })
-      .catch(err => {
-        console.error('error:', err);
-        setIsLoading(false);  // Stop loading on error
-      });
-  };
-
-  const handleCreateBooking = () => {
-    const guestsToSubmit = finalGuests.slice(0, -1).map((guest) => {
-      const birthday = guest.year && guest.month && guest.day
-        ? `${guest.year}-${String(guest.month).padStart(2, '0')}-${String(guest.day).padStart(2, '0')}`
-        : '';
-      return {
-        ...guest,
-        birthday,
-      };
-    });
-
-    if (guestsToSubmit.length === 0) {
-      return;
+  useEffect(() => {
+    if (bookingData) {
+      localStorage.setItem('bookingData', JSON.stringify(bookingData));
     }
+  }, [bookingData]);
 
-    fetch(`${process.env.REACT_APP_API_URL}/passengers/addmultiple`, {
+  useEffect(() => {
+    if (guestEmail) {
+      localStorage.setItem('guestEmail', guestEmail);
+    }
+  }, [guestEmail]);
+
+  const createPassengers = async (guests) => {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/passengers/addmultiple`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${localStorage.getItem('token')}`,
       },
-      body: JSON.stringify({ passengers: guestsToSubmit }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        const passengerIds = data.passengerIds;
-        const bookingData = {
-          userId: user?.id || null,
-          passengerIds,
-          commercialFlightId: selectedFlight,
-          promoId: promo || null,
-          seatClass: 'economy'
-        };
-        return fetch(`${process.env.REACT_APP_API_URL}/bookings/`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          },
-          body: JSON.stringify(bookingData),
-        });
-      })
-      .then(() => {
-        //handlePayment();
-        navigate('/payment', { state: { bookingData, totalCost, guestEmail } })
-      })
-      .catch((error) => {
-        notyf.error(`Error booking: ${error.message}`);
-      });
+      body: JSON.stringify({ passengers: guests }),
+    });
+    return response.json();
   };
+
+  const createBooking = async (passengerIds) => {
+    const bookingPayload = {
+      userId: bookingData?.user?.id || null,
+      passengerIds,
+      commercialFlightId: bookingData?.selectedFlight?._id,
+      promoId: bookingData?.promo || null,
+      fare: bookingData?.fare,
+      seatClass: bookingData?.seatClass,
+    };
+
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/bookings/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      },
+      body: JSON.stringify(bookingPayload),
+    });
+    return response.json();
+  };
+
+  const handleCreateBooking = async () => {
+    try {
+      const guestsToSubmit = bookingData?.finalGuests.map((guest) => {
+        const birthday = guest.year && guest.month && guest.day
+          ? `${guest.year}-${String(guest.month).padStart(2, '0')}-${String(guest.day).padStart(2, '0')}`
+          : '';
+        return { ...guest, birthday };
+      });
+
+      if (!guestsToSubmit?.length) return;
+
+      setIsPaymentProcessing(true);
+      console.log(`guestTosubmit`, guestsToSubmit);
+      const passengerData = await createPassengers(guestsToSubmit);
+      console.log(`passengerData`, passengerData);
+      
+      const bookedData = await createBooking(passengerData.passengerIds);
+      console.log(`bookingData`, bookedData);
+      // setBookingData(bookedData)
+      
+
+      localStorage.removeItem('guestEmail');
+      navigate('/payment', { state: { bookedData, guestEmail } });
+    } catch (error) {
+      notyf.error(`Error booking: ${error.message}`);
+    } finally {
+      setIsPaymentProcessing(false);
+    }
+  };
+
+  if (!bookingData) return null; // Or display a loading spinner or message
 
   return (
     <div>
@@ -160,20 +125,22 @@ export default function BookingSummary() {
             <Spinner animation="border" role="status">
               <span className="visually-hidden">Loading...</span>
             </Spinner>
-          </div> // Show loading indicator
+          </div>
         )}
         <h5>Please review your booking before proceeding to payment</h5>
         <h2>Booking Summary</h2>
-        {bookingData && <BookingSummaryTable bookingData={bookingData} />}
+        <BookingSummaryTable bookingData={bookingData} />
         <div>
-          <p>By clicking the ‘Continue’ button below, I confirm that I have read, understood, and accept all the conditions set by the airline.</p>
+          <p>
+            By clicking the ‘Continue’ button below, I confirm that I have read, understood, and accept all the conditions set by the airline.
+          </p>
         </div>
-        <div className='d-flex'>
-          <div className='ms-auto'>
+        <div className="d-flex">
+          <div className="ms-auto">
             <BackButton link="/flights/guests" />
             {!isLoading && (
-                <PayButton onClick={handleCreateBooking} disabled={isPaymentProcessing} />
-             )}
+              <PayButton onClick={handleCreateBooking} disabled={isPaymentProcessing} />
+            )}
           </div>
         </div>
       </div>
