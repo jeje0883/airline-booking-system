@@ -343,6 +343,7 @@ const filteredPromos = getSortedPromos().filter((promo) =>
                 <td>{promo.numberOfSlots != null ? promo.numberOfSlots : 'N/A'}</td>
                 <td>
                   <Button
+                   className="action-button"
                     variant={promo.isActive ? 'success' : 'danger'}
                     onClick={(e) => {
                       e.stopPropagation(); // Prevent row click event

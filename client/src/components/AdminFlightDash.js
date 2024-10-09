@@ -584,20 +584,55 @@ export default function AdminFlightDash() {
 
       {/* MODAL FOR FLIGHT DETAILS */}
       {selectedFlight && (
-        <Modal show={isModalVisible} onHide={handleCloseModal}>
-          <Modal.Header closeButton>
-            <Modal.Title>Flight Details</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            {/* Add flight details here */}
-            <p><strong>Flight No:</strong> {selectedFlight?.flightNo || 'N/A'}</p>
-            {/* Add more details as needed */}
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleCloseModal}>Close</Button>
-          </Modal.Footer>
-        </Modal>
-      )}
+  <Modal show={isModalVisible} onHide={handleCloseModal} className="modal-details">
+    <Modal.Header closeButton>
+      <Modal.Title>Flight Details</Modal.Title>
+    </Modal.Header>
+    <Modal.Body className="modal-details-body">
+      {/* <div> */}
+        <h5>Flight Information</h5>
+        <p><strong>Flight No:</strong> {selectedFlight?.flightNo || 'N/A'}</p>
+        <p><strong>Time:</strong> {selectedFlight?.time || 'N/A'}</p>
+        <p><strong>Days:</strong> {selectedFlight?.days && selectedFlight.days.length > 0
+          ? mapDaysToWeekdays(selectedFlight.days).join(', ')
+          : 'N/A'}</p>
+        <p><strong>Status:</strong> {selectedFlight?.isActive ? 'Active' : 'Inactive'}</p>
+        <p><strong>Created At:</strong> {new Date(selectedFlight?.createdAt).toLocaleString() || 'N/A'}</p>
+        <p><strong>Updated At:</strong> {new Date(selectedFlight?.updatedAt).toLocaleString() || 'N/A'}</p>
+      {/* </div> */}
+      <hr />
+      {/* <div> */}
+        <h5>Airplane Details</h5>
+        <p><strong>Plane ID:</strong> {selectedFlight?.airplane?.planeId || 'N/A'}</p>
+        <p><strong>Brand:</strong> {selectedFlight?.airplane?.brand || 'N/A'}</p>
+        <p><strong>Model:</strong> {selectedFlight?.airplane?.model || 'N/A'}</p>
+        <p><strong>Airline Name:</strong> {selectedFlight?.airplane?.airlineName || 'N/A'}</p>
+        <p><strong>Total Seats:</strong> {selectedFlight?.airplane?.totalSeats || 'N/A'}</p>
+        <p><strong>Economy Seats:</strong> {selectedFlight?.airplane?.economySeat || 'N/A'}</p>
+        <p><strong>Premium Seats:</strong> {selectedFlight?.airplane?.premiumSeat || 'N/A'}</p>
+        <p><strong>Business Seats:</strong> {selectedFlight?.airplane?.businessSeat || 'N/A'}</p>
+        <p><strong>First Class Seats:</strong> {selectedFlight?.airplane?.firstClass || 'N/A'}</p>
+        <p><strong>Status:</strong> {selectedFlight?.airplane?.isActive ? 'Active' : 'Inactive'}</p>
+      {/* </div> */}
+      <hr />
+      {/* <div> */}
+        <h5>Route Details</h5>
+        <p><strong>Departure Airport:</strong> {selectedFlight?.route?.departure?.airportName || 'N/A'} ({selectedFlight?.route?.departure?.airportCode || 'N/A'})</p>
+        <p><strong>Departure City:</strong> {selectedFlight?.route?.departure?.airportCity || 'N/A'}</p>
+        <p><strong>Departure Country:</strong> {selectedFlight?.route?.departure?.airportCountry || 'N/A'}</p>
+        <p><strong>Destination Airport:</strong> {selectedFlight?.route?.destination?.airportName || 'N/A'} ({selectedFlight?.route?.destination?.airportCode || 'N/A'})</p>
+        <p><strong>Destination City:</strong> {selectedFlight?.route?.destination?.airportCity || 'N/A'}</p>
+        <p><strong>Destination Country:</strong> {selectedFlight?.route?.destination?.airportCountry || 'N/A'}</p>
+        <p><strong>Distance (KM):</strong> {selectedFlight?.route?.distanceKM || 'N/A'}</p>
+        <p><strong>Duration (Minutes):</strong> {selectedFlight?.route?.durationMins || 'N/A'}</p>
+        <p><strong>Status:</strong> {selectedFlight?.route?.isActive ? 'Active' : 'Inactive'}</p>
+      {/* </div> */}
+    </Modal.Body>
+    <Modal.Footer>
+      <Button variant="secondary" onClick={handleCloseModal}>Close</Button>
+    </Modal.Footer>
+  </Modal>
+)}
 
       {/* MODAL FOR GENERATING COMMERCIAL FLIGHTS */}
       <Modal show={isGenerateModalVisible} onHide={handleCloseGenerateModal}>

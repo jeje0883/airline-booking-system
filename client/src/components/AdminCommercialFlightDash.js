@@ -474,122 +474,74 @@ export default function CommercialFlights() {
 
       {/* Modal for Flight Details */}
       {selectedFlightDetails && (
-        <Modal show={isDetailsModalVisible} onHide={handleCloseDetailsModal}>
+        <Modal show={isDetailsModalVisible} onHide={handleCloseDetailsModal} className="modal-details">
           <Modal.Header closeButton>
             <Modal.Title>Commercial Flight Details</Modal.Title>
           </Modal.Header>
-          <Modal.Body>
-            {/* Display detailed information about the selected commercial flight */}
-            {/* Similar to the template's details modal */}
-            <div className="flight-details-container">
+          <Modal.Body className="modal-details-body">
+          
+             {/* Available Seats Section */}
+             
+             <h5>Available Seats</h5>
+                <p><strong>First Class:</strong> {selectedFlightDetails?.availableSeats?.firstClass || 'N/A'}</p>
+                <p><strong>Business Class:</strong> {selectedFlightDetails?.availableSeats?.businessSeat || 'N/A'}</p>
+                <p><strong>Premium Economy:</strong> {selectedFlightDetails?.availableSeats?.premiumSeat || 'N/A'}</p>
+                <p><strong>Economy:</strong> {selectedFlightDetails?.availableSeats?.economySeat || 'N/A'}</p>
+            
+
+              <hr />
+    
               {/* Flight Information Section */}
-              <div className="flight-details-section full-width">
-                <div className="flight-details-section-header">Flight Information</div>
-                <div className="flight-detail-item">
-                  <span className="flight-detail-label">Flight No:</span>
-                  <span className="flight-detail-value">{selectedFlightDetails.flight.flightNo}</span>
-                </div>
-                <div className="flight-detail-item">
-                  <span className="flight-detail-label">Date:</span>
-                  <span className="flight-detail-value">{new Date(selectedFlightDetails.date).toLocaleDateString()}</span>
-                </div>
-                <div className="flight-detail-item">
-                  <span className="flight-detail-label">Departure Time:</span>
-                  <span className="flight-detail-value">{selectedFlightDetails.departureTime}</span>
-                </div>
-                <div className="flight-detail-item">
-                  <span className="flight-detail-label">Status:</span>
-                  <span className="flight-detail-value">{selectedFlightDetails.isActive ? "Active" : "Inactive"}</span>
-                </div>
-              </div>
+      
+                <h5>Flight Information</h5>
+                <p><strong>Flight No:</strong> {selectedFlightDetails?.flight?.flightNo || 'N/A'}</p>
+                <p><strong>Date:</strong> {new Date(selectedFlightDetails?.date).toLocaleDateString() || 'N/A'}</p>
+                <p><strong>Departure Time:</strong> {selectedFlightDetails?.departureTime || 'N/A'}</p>
+                <p><strong>Status:</strong> {selectedFlightDetails?.isActive ? 'Active' : 'Inactive'}</p>
+        
+
+              <hr />
 
               {/* Route Information Section */}
-              <div className="flight-details-section">
-                <div className="flight-details-section-header">Route Information</div>
-                <div className="flight-detail-item">
-                  <span className="flight-detail-label">Departure:</span>
-                  <span className="flight-detail-value">
-                    {selectedFlightDetails.flight.route.departure.airportCity} - {selectedFlightDetails.flight.route.departure.airportCode}
-                  </span>
-                </div>
-                <div className="flight-detail-item">
-                  <span className="flight-detail-label">Destination:</span>
-                  <span className="flight-detail-value">
-                    {selectedFlightDetails.flight.route.destination.airportCity} - {selectedFlightDetails.flight.route.destination.airportCode}
-                  </span>
-                </div>
-                <div className="flight-detail-item">
-                  <span className="flight-detail-label">Distance (KM):</span>
-                  <span className="flight-detail-value">{selectedFlightDetails.flight.route.distanceKM || "N/A"}</span>
-                </div>
-                <div className="flight-detail-item">
-                  <span className="flight-detail-label">Duration (mins):</span>
-                  <span className="flight-detail-value">{selectedFlightDetails.flight.route.durationMins || "N/A"}</span>
-                </div>
-              </div>
+           
+                <h5>Route Information</h5>
+                <p><strong>Departure:</strong> {selectedFlightDetails?.flight?.route?.departure?.airportCity || 'N/A'} - {selectedFlightDetails?.flight?.route?.departure?.airportCode || 'N/A'}</p>
+                <p><strong>Destination:</strong> {selectedFlightDetails?.flight?.route?.destination?.airportCity || 'N/A'} - {selectedFlightDetails?.flight?.route?.destination?.airportCode || 'N/A'}</p>
+                <p><strong>Distance (KM):</strong> {selectedFlightDetails?.flight?.route?.distanceKM || 'N/A'}</p>
+                <p><strong>Duration (Minutes):</strong> {selectedFlightDetails?.flight?.route?.durationMins || 'N/A'}</p>
+            
 
-              {/* Airplane Details Section */}
-              <div className="flight-details-section">
-                <div className="flight-details-section-header">Airplane Details</div>
-                <div className="flight-detail-item">
-                  <span className="flight-detail-label">Airline:</span>
-                  <span className="flight-detail-value">{selectedFlightDetails.flight.airplane.airlineName}</span>
-                </div>
-                <div className="flight-detail-item">
-                  <span className="flight-detail-label">Model:</span>
-                  <span className="flight-detail-value">{selectedFlightDetails.flight.airplane.model}</span>
-                </div>
-                <div className="flight-detail-item">
-                  <span className="flight-detail-label">Total Seats:</span>
-                  <span className="flight-detail-value">{selectedFlightDetails.flight.airplane.totalSeats}</span>
-                </div>
-              </div>
+              <hr />
 
-              {/* Available Seats Section */}
-              <div className="flight-details-section">
-                <div className="flight-details-section-header">Available Seats</div>
-                <div className="flight-detail-item">
-                  <span className="flight-detail-label">First Class:</span>
-                  <span className="flight-detail-value">{selectedFlightDetails.availableSeats.firstClass}</span>
-                </div>
-                <div className="flight-detail-item">
-                  <span className="flight-detail-label">Business Class:</span>
-                  <span className="flight-detail-value">{selectedFlightDetails.availableSeats.businessSeat}</span>
-                </div>
-                <div className="flight-detail-item">
-                  <span className="flight-detail-label">Premium Economy:</span>
-                  <span className="flight-detail-value">{selectedFlightDetails.availableSeats.premiumSeat}</span>
-                </div>
-                <div className="flight-detail-item">
-                  <span className="flight-detail-label">Economy:</span>
-                  <span className="flight-detail-value">{selectedFlightDetails.availableSeats.economySeat}</span>
-                </div>
-              </div>
+              {/* Airplane Information Section */}
+            
+                <h5>Airplane Information</h5>
+                <p><strong>Airline:</strong> {selectedFlightDetails?.flight?.airplane?.airlineName || 'N/A'}</p>
+                <p><strong>Model:</strong> {selectedFlightDetails?.flight?.airplane?.model || 'N/A'}</p>
+                <p><strong>Total Seats:</strong> {selectedFlightDetails?.flight?.airplane?.totalSeats || 'N/A'}</p>
+           
 
-              {/* Pricing Details Section */}
-              <div className="flight-details-section">
-                <div className="flight-details-section-header">Pricing Details</div>
-                <div className="flight-detail-item">
-                  <span className="flight-detail-label">Base Price:</span>
-                  <span className="flight-detail-value">{selectedFlightDetails.pricing?.basePrice}</span>
-                </div>
-                {/* Add more pricing details as needed */}
-              </div>
+              <hr />
+
+           
+
+              {/* Pricing Section */}
+             
+                <h5>Pricing Details</h5>
+                <p><strong>Base Price:</strong> {selectedFlightDetails?.pricing?.basePrice || 'N/A'}</p>
+                <p><strong>First Class Factor:</strong> {selectedFlightDetails?.pricing?.firstClassFactor || 'N/A'}</p>
+                <p><strong>Business Factor:</strong> {selectedFlightDetails?.pricing?.businessFactor || 'N/A'}</p>
+             
+
+              <hr />
 
               {/* Additional Details Section */}
-              <div className="flight-details-section full-width">
-                <div className="flight-details-section-header">Additional Details</div>
-                <div className="flight-detail-item">
-                  <span className="flight-detail-label">Created At:</span>
-                  <span className="flight-detail-value">{new Date(selectedFlightDetails.createdAt).toLocaleString()}</span>
-                </div>
-                <div className="flight-detail-item">
-                  <span className="flight-detail-label">Updated At:</span>
-                  <span className="flight-detail-value">{new Date(selectedFlightDetails.updatedAt).toLocaleString()}</span>
-                </div>
-              </div>
-            </div>
-          </Modal.Body>
+              
+                <h5>Additional Details</h5>
+                <p><strong>Created At:</strong> {new Date(selectedFlightDetails?.createdAt).toLocaleString() || 'N/A'}</p>
+                <p><strong>Updated At:</strong> {new Date(selectedFlightDetails?.updatedAt).toLocaleString() || 'N/A'}</p>
+              
+            </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleCloseDetailsModal}>
               Close

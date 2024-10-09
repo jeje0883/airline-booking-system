@@ -1,9 +1,8 @@
-/* Checkin.css */
-
+/* 
   
   .checkin-container {
     width: 100%;
-    max-width: 500px; /* Set a max width for the form */
+    max-width: 500px; 
     background-color: #fff;
     padding: 20px;
     border-radius: 5px;
@@ -55,7 +54,7 @@
   .toggle-scan-button {
     margin-bottom: 10px;
     padding: 10px 20px;
-    background-color: #007bff; /* Bootstrap primary color */
+    background-color: #007bff; 
     color: #fff;
     border: none;
     border-radius: 5px;
@@ -63,5 +62,184 @@
   }
   
   .toggle-scan-button:hover {
-    background-color: #0056b3; /* Darker shade on hover */
+    background-color: #0056b3; 
+  } */
+
+ /* Define CSS Variables for Colors and Fonts */
+:root {
+  --primary-color: #336749; /* Dark Green */
+  --secondary-color: #007bff; /* Vibrant Blue */
+  --background-color: #f5f7fa;
+  --form-background: #ffffff;
+  --text-color: #333333;
+  --border-color: #e0e0e0;
+  --error-color: #e74c3c;
+  --success-color: #2ecc71;
+  --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: var(--background-color);
+  font-family: var(--font-family);
+  color: var(--text-color);
+}
+
+.checkin-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  /* min-height: 60vh; */
+}
+
+.checkin-container h1 {
+  margin-bottom: 30px;
+  font-size: 2.5rem;
+  color: var(--primary-color);
+}
+
+.checkin-form {
+  width: 100%;
+  max-width: 500px;
+  background-color: var(--form-background);
+  padding: 30px 25px;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.3s ease;
+}
+
+.checkin-form:hover {
+  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.1);
+}
+
+.checkin-form label {
+  display: block;
+  margin-bottom: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.checkin-form input[type="text"] {
+  width: 100%;
+  padding: 12px 15px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.checkin-form input[type="text"]:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 8px rgba(51, 103, 73, 0.2); /* Adjusted to match primary color */
+  outline: none;
+}
+
+.checkin-form input[type="submit"] {
+  width: 100%;
+  padding: 14px;
+  background-color: var(--primary-color);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.checkin-form input[type="submit"]:hover {
+  background-color: #285038; /* Darker shade of primary color */
+  transform: translateY(-2px);
+}
+
+.checkin-form input[type="submit"]:active {
+  background-color: #1e3d2a; /* Even darker shade for active state */
+  transform: translateY(0);
+}
+
+.message-container {
+  width: 100%;
+  max-width: 500px;
+  margin-top: 20px;
+  padding: 15px 20px;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.message-container p {
+  margin: 0;
+}
+
+.message-container.error {
+  background-color: #fdecea;
+  color: var(--error-color);
+  border: 1px solid #f5c6cb;
+}
+
+.message-container.success {
+  background-color: #eafaf1;
+  color: var(--success-color);
+  border: 1px solid #c3e6cb;
+}
+
+.checkin-info {
+  width: 100%;
+  max-width: 500px;
+  margin-top: 30px;
+  padding: 25px 20px;
+  background-color: var(--secondary-color);
+  color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.checkin-info h2 {
+  margin-bottom: 15px;
+  font-size: 1.8rem;
+  color: #ffffff;
+}
+
+.checkin-info p {
+  margin: 8px 0;
+  font-size: 1rem;
+}
+
+.modal-body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  color: var(--text-color);
+}
+
+.spinner-border {
+  margin-right: 15px;
+  width: 3rem;
+  height: 3rem;
+}
+
+@media (max-width: 600px) {
+  .checkin-container {
+    padding: 20px 10px;
   }
+
+  .checkin-form,
+  .checkin-info,
+  .message-container {
+    padding: 20px 15px;
+  }
+
+  .checkin-container h1 {
+    font-size: 2rem;
+  }
+
+  .checkin-form input[type="submit"] {
+    font-size: 1rem;
+  }
+
+  .checkin-info h2 {
+    font-size: 1.5rem;
+  }
+}

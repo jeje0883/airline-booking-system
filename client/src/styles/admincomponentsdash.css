@@ -135,10 +135,18 @@
 
 
   .modal-details-body p {
+    display: flex;
     font-size: small;
     margin-bottom: 0; 
     padding-bottom: 0; 
     line-height: .5; 
+    flex-wrap: nowrap; 
+    white-space: nowrap;
+  }
+
+  .modal-details-body {
+    max-width: 800px; 
+    overflow-x: auto; /* Enable horizontal scroll if necessary */
   }
 
   .modal-add-body, .flight-details-containe {

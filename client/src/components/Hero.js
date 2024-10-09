@@ -18,7 +18,7 @@ const HeroSection = () => {
   }, []);
 
   return (
-    <section className="hero" data-aos="fade-in">
+    <section className="hero container-fluid" data-aos="fade-in">
     <div className="hero-content" data-aos="fade-up">
       <h1 data-aos="fade-up" data-aos-delay="200">Explore the World</h1>
       <p data-aos="fade-up" data-aos-delay="400">Find the best deals on flights and destinations</p>

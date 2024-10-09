@@ -10,7 +10,7 @@
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "crypto-js": "^4.2.0",
-    "framer-motion": "^11.5.4",
+    "framer-motion": "^11.11.5",
     "gsap": "^3.12.5",
     "js-base64": "^3.7.7",
     "notyf": "^3.10.0",

@@ -1,6 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { UserProvider } from './context/UserContext';
+import ErrorBoundary from './components/ErrorBoundary'; 
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'aos/dist/aos.css'; // Import AOS styles
+import AOS from 'aos';
+
+
 import NavBar from '../src/components/NavBar';
 import Home from './pages/Home';
 
@@ -29,10 +35,26 @@ import Deals from './pages/Deals';
 import Checkin from './pages/Checkin';
 import TicketP from './pages/Ticket';
 
+
+import DestinationDetails from './components/DestinationDetails';
+import WindowDestination from './components/WindowDestination';
+
+
+
 function App() {
+  useEffect(() => {
+    AOS.init({
+      duration: 800, // Animation duration
+      easing: 'ease-in-out', // Easing function
+      once: true, // Whether animation should happen only once
+    });
+  }, []);
+
   return (
     <>
+    
       <UserProvider>
+      <ErrorBoundary>
         <Router>
           <NavBar />
           <Routes>
@@ -58,11 +80,15 @@ function App() {
 
             {/* Dynamic Check-in Route */}
             <Route path="/checkin/:id/:firstName/:lastName" element={<Checkin />} />
+            <Route path="/destination/:id" element={<DestinationDetails />} />
+            <Route path="/" element={<WindowDestination />} />
 
             <Route path="/*" element={<NotFound />} />
           </Routes>
         </Router>
+        </ErrorBoundary>
       </UserProvider>
+      
     </>
   );
 }
