@@ -55,8 +55,7 @@
   font-size: 26px;                 
   font-weight: bold;               
   color: #000;                    
-  cursor: pointer;                
-  padding: 0;                     
+  cursor: pointer;                                  
   line-height: 1;               
   margin: 10px;
 }
@@ -143,7 +142,7 @@
 .social-login .btn-google {
     border-color: #db4437;
     color: #db4437;
-} */
+} 
 
 /* .social-login .btn-apple {
     border-color: #000;
