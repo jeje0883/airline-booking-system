@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const fetchData = require('./cronJobs');
 const path = require('path');
 require('dotenv').config();
 
