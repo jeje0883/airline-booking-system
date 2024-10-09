@@ -132,7 +132,7 @@ const TicketDetails = () => {
                 <div className="ticket-qr">
                   <p>scan to check-in</p>
                   <QRCode
-                    value={`${process.env.REACT_APP_API_URL}/checkin/${ticketNo}/${passenger.firstName}/${passenger.lastName}`}
+                    value={`https://airline-booking-front.vercel.app/checkin/${ticketNo}/${passenger.firstName}/${passenger.lastName}`}
                     size={80}
                     bgColor="#FFFFFF" // White background
                     fgColor="#000000" // Black QR code
