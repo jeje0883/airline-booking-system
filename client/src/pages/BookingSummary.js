@@ -4,7 +4,7 @@ import BookingSummaryTable from '../components/BookingSummaryTable';
 import { BackButton, PayButton } from '../components/Buttons';
 import { Notyf } from 'notyf';
 import 'notyf/notyf.min.css';
-import { Spinner } from 'react-bootstrap';
+import { Spinner, Modal } from 'react-bootstrap';
 
 export default function BookingSummary() {
   const notyf = new Notyf();
@@ -87,31 +87,28 @@ export default function BookingSummary() {
 
   const handleCreateBooking = async () => {
     try {
+      setIsPaymentProcessing(true);
+      setIsLoading(true); // Set loading to true at the start
       const guestsToSubmit = bookingData?.finalGuests.map((guest) => {
-        const birthday = guest.year && guest.month && guest.day
-          ? `${guest.year}-${String(guest.month).padStart(2, '0')}-${String(guest.day).padStart(2, '0')}`
-          : '';
+        const birthday =
+          guest.year && guest.month && guest.day
+            ? `${guest.year}-${String(guest.month).padStart(2, '0')}-${String(guest.day).padStart(2, '0')}`
+            : '';
         return { ...guest, birthday };
       });
-
+  
       if (!guestsToSubmit?.length) return;
-
-      setIsPaymentProcessing(true);
-      console.log(`guestTosubmit`, guestsToSubmit);
+  
       const passengerData = await createPassengers(guestsToSubmit);
-      console.log(`passengerData`, passengerData);
-      
       const bookedData = await createBooking(passengerData.passengerIds);
-      console.log(`bookingData`, bookedData);
-      // setBookingData(bookedData)
-      
-
+  
       localStorage.removeItem('guestEmail');
       navigate('/payment', { state: { bookedData, guestEmail } });
     } catch (error) {
       notyf.error(`Error booking: ${error.message}`);
     } finally {
       setIsPaymentProcessing(false);
+      setIsLoading(false); // Set loading to false after completion
     }
   };
 
@@ -120,13 +117,20 @@ export default function BookingSummary() {
   return (
     <div>
       <div className="container">
-        {isLoading && (
-          <div className="d-flex justify-content-center my-4">
-            <Spinner animation="border" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </Spinner>
-          </div>
-        )}
+        <Modal
+          show={isLoading}
+          centered
+          backdrop="static"
+          keyboard={false}
+        >
+            <Modal.Body className="d-flex align-items-center justify-content-center text-center">
+              <Spinner animation="border" role="status" className="me-3">
+                <span className="visually-hidden">Loading...</span>
+              </Spinner>
+              <p className="mb-0">Processing your booking, please wait ...</p>
+            </Modal.Body>
+        </Modal>
+  
         <h5>Please review your booking before proceeding to payment</h5>
         <h2>Booking Summary</h2>
         <BookingSummaryTable bookingData={bookingData} />
@@ -146,4 +150,5 @@ export default function BookingSummary() {
       </div>
     </div>
   );
+  
 }

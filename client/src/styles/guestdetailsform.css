@@ -94,6 +94,10 @@
     flex: 1; /* Distribute space evenly */
 }
 
+label.error {
+    color: red;
+  }
+
 /* Mobile responsiveness */
 @media (max-width: 768px) {
     .guest-details-form {

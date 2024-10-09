@@ -1,3 +1,5 @@
+
+
 import React, { useState, useRef, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -111,7 +113,7 @@ function GuestForm({ guestIndex, guest, onInputChange, onDateChange }) {
     <div className="guest-form">
       <div className="form-group name-group">
         <div>
-          <label>Title</label>
+          <label className={guest.title ? '' : 'error'}>Title</label>
           <select name="title" value={guest.title || ''} onChange={onInputChange}>
             <option value="">Select</option>
             <option value="Mr">Mr</option>
@@ -121,7 +123,7 @@ function GuestForm({ guestIndex, guest, onInputChange, onDateChange }) {
         </div>
 
         <div>
-          <label>First Name</label>
+          <label className={guest.firstName ? '' : 'error'}>First Name</label>
           <input
             type="text"
             name="firstName"
@@ -132,7 +134,7 @@ function GuestForm({ guestIndex, guest, onInputChange, onDateChange }) {
         </div>
 
         <div>
-          <label>Last Name</label>
+          <label className={guest.lastName ? '' : 'error'}>Last Name</label>
           <input
             type="text"
             name="lastName"
@@ -147,7 +149,7 @@ function GuestForm({ guestIndex, guest, onInputChange, onDateChange }) {
         <label>Date of Birth</label>
         <div className="dob-inputs">
           <div>
-            <label>Day</label>
+            <label className={guest.day ? '' : 'error'}>Day</label>
             <input
               type="text"
               name="day"
@@ -158,7 +160,7 @@ function GuestForm({ guestIndex, guest, onInputChange, onDateChange }) {
             />
           </div>
           <div>
-            <label>Month</label>
+            <label className={guest.month ? '' : 'error'}>Month</label>
             <input
               type="text"
               name="month"
@@ -169,7 +171,7 @@ function GuestForm({ guestIndex, guest, onInputChange, onDateChange }) {
             />
           </div>
           <div>
-            <label>Year</label>
+            <label className={guest.year ? '' : 'error'}>Year</label>
             <input
               type="text"
               name="year"
@@ -206,7 +208,7 @@ function GuestForm({ guestIndex, guest, onInputChange, onDateChange }) {
       </div>
 
       <div className="form-group nationality-group">
-        <label>Nationality</label>
+        <label className={guest.nationality ? '' : 'error'}>Nationality</label>
         <select name="nationality" value={guest.nationality || ''} onChange={onInputChange}>
           <option value="">Select Nationality</option>
           {nationalities.map((nationality) => (
@@ -222,7 +224,7 @@ function GuestForm({ guestIndex, guest, onInputChange, onDateChange }) {
         <input
           type="text"
           name="passportNo"
-          value={guest.passportNo || null}
+          value={guest.passportNo || ''}
           placeholder="Passport Number"
           onChange={onInputChange}
         />
@@ -233,7 +235,7 @@ function GuestForm({ guestIndex, guest, onInputChange, onDateChange }) {
           <label>Contact Information</label>
           <div className='contact-info'>
             <div>
-              <label>Mobile Number</label>
+              <label className={guest.phoneNo ? '' : 'error'}>Mobile Number</label>
               <input
                 type="text"
                 name="phoneNo"
@@ -243,7 +245,7 @@ function GuestForm({ guestIndex, guest, onInputChange, onDateChange }) {
               />
             </div>
             <div>
-              <label>Email</label>
+              <label className={guest.email ? '' : 'error'}>Email</label>
               <input
                 type="text"
                 name="email"
@@ -258,5 +260,6 @@ function GuestForm({ guestIndex, guest, onInputChange, onDateChange }) {
     </div>
   );
 }
+
 
 export default GuestDetailsForm;

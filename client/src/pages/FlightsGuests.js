@@ -1,6 +1,6 @@
 
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import GuestDetailsForm from '../components/GuestDetailsForm';
 import { BackButton, ContinueButton } from '../components/Buttons';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -118,6 +118,18 @@ function GuestDetailsPage() {
     setShowGuestModal(false); // Close the modal
   };
 
+  function isGuestValid(guest) {
+    if (!guest) return false;
+    const requiredFields = ['title', 'firstName', 'lastName', 'day', 'month', 'year', 'nationality', 'phoneNo', 'email'];
+    return requiredFields.every(field => guest[field] && guest[field] !== '');
+  }
+
+  const isLastGuestValid = useMemo(() => {
+    const guestCount = finalGuests.length;
+    if (guestCount < 2) return false; // Not enough guests to validate
+    const lastFilledGuest = finalGuests[guestCount - 2]; // Second-to-last guest
+    return isGuestValid(lastFilledGuest);
+  }, [finalGuests]);
 
   return (
     <div>
@@ -129,7 +141,7 @@ function GuestDetailsPage() {
         {/* Navigation buttons */}
         <div>
           <BackButton link="/flights/options" />
-          <ContinueButton onClick={handleContinueToBookingSummary} />
+          <ContinueButton onClick={handleContinueToBookingSummary} disabled={!isLastGuestValid} />
         </div>
 
         {/* Final Guests display */}
@@ -184,3 +196,4 @@ function GuestDetailsPage() {
 }
 
 export default GuestDetailsPage;
+

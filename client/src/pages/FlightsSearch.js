@@ -10,8 +10,7 @@ import FlightTypeSelector from "../components/SelectorFlightType.js";
 import '../styles/flightsearch.css';
 import { Notyf } from 'notyf';
 import 'notyf/notyf.min.css';
-import { Spinner } from 'react-bootstrap'; 
-
+import { Spinner, Modal } from 'react-bootstrap';
 export default function SearchFlight() {
   const notyf = new Notyf({ duration: 3000 });
   const navigate = useNavigate();
@@ -324,13 +323,20 @@ export default function SearchFlight() {
       <div className='search-flight-content container'>
         <h1 className="search-flight-heading my-5 mx-5">Where would you like to go?</h1>
 
-        {loading && (
-          <div className="d-flex justify-content-center my-3">
-            <Spinner animation="border" role="status">
+        {/* Loading Modal */}
+        <Modal
+          show={loading}
+          centered
+          backdrop="static"
+          keyboard={false}
+        >
+          <Modal.Body className="d-flex align-items-center justify-content-center text-center">
+            <Spinner animation="border" role="status" className="me-3">
               <span className="visually-hidden">Loading...</span>
             </Spinner>
-          </div>
-        )}
+            <p className="mb-0">Searching for flights, please wait ...</p>
+          </Modal.Body>
+        </Modal>
 
         {!loading && (
           <>
@@ -346,36 +352,36 @@ export default function SearchFlight() {
                       portOptions={portOptions}
                       setDeparturePort={setDeparturePort}
                       setDestinationPort={setDestinationPort}
-                      departurePort={departurePort} // Pass current value
-                      destinationPort={destinationPort} // Pass current value
+                      departurePort={departurePort}
+                      destinationPort={destinationPort}
                     />
                     <DateSelector 
                       label="DEPARTURE DATE" 
                       onDateChange={setDepartureDate}
-                      selectedDate={departureDate} // Pass current value
+                      selectedDate={departureDate}
                     />  
                   </div>
                   <div className='search-flight-row search-flight-row--oneway'>
                     <PaxSelector 
                       label={'ADULTS (12+ YEARS)'} 
                       setPaxCount={setAdultsCount}
-                      paxCount={adultsCount} // Pass current value
+                      paxCount={adultsCount}
                     />
                     <PaxSelector 
                       label={'CHILDREN (2-11 YEARS)'} 
                       setPaxCount={setChildCount}
-                      paxCount={childCount} // Pass current value
+                      paxCount={childCount}
                     />
                     <PaxSelector 
                       label={'INFANTS (UNDER 2 YEARS)'} 
                       setPaxCount={setInfantsCount}
-                      paxCount={infantsCount} // Pass current value
+                      paxCount={infantsCount}
                     />
                     <InputBox 
                       label="ENTER PROMO CODES" 
                       placeholder="Enter Code" 
                       onChange={setInput}
-                      value={input} // Pass current value
+                      value={input}
                     />
                   </div>
                   <div className='search-flight-submit-btn'>

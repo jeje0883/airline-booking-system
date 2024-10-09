@@ -4,9 +4,9 @@ import searchIcon from '../assets/searchicon.png';
 import '../styles/buttons.css';
 
 // BaseButton component for common button styles
-function BaseButton({ className, onClick, type = "button", children }) {
+function BaseButton({ className, onClick, type = "button", disabled = false, children }) {
   return (
-    <button type={type} className={className} onClick={onClick}>
+    <button type={type} className={className} onClick={onClick} disabled={disabled}>
       {children}
     </button>
   );
@@ -30,24 +30,24 @@ function SearchFlightButton({ link, type = "button" }) {
   );
 }
 
-function ContinueButton({ onClick = () => {}, link, type = "button" }) {
-  const navigate = useNavigate(); // Use useNavigate for navigation
+function ContinueButton({ onClick = () => {}, link, type = "button", disabled = false }) {
+  const navigate = useNavigate();
 
   const handleNavigation = () => {
     if (link) {
-      navigate(link); // Navigate to the provided link
+      navigate(link);
     }
   };
 
   const handleClick = () => {
     if (onClick) {
-      onClick(); // Execute any additional logic passed via onClick
+      onClick();
     }
-    handleNavigation(); // Then handle navigation if link is provided
+    handleNavigation();
   };
 
   return (
-    <BaseButton className="continue-button-link" onClick={handleClick} type={type}>
+    <BaseButton className="continue-button-link" onClick={handleClick} type={type} disabled={disabled}>
       <div className="continue-button-container">
         <span className="continue-button-text">CONTINUE</span>
       </div>

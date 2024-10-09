@@ -137,3 +137,8 @@ button {
     height: 48px;
     margin-left: 10px;
 }
+
+.continue-button-link[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
