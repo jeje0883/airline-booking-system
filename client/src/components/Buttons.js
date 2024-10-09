@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom'; // Use useNavigate for internal navigation
+import { useNavigate } from 'react-router-dom';
 import searchIcon from '../assets/searchicon.png';
 import '../styles/buttons.css';
 
@@ -13,7 +13,7 @@ function BaseButton({ className, onClick, type = "button", disabled = false, chi
 }
 
 function SearchFlightButton({ link, type = "button" }) {
-  const navigate = useNavigate(); // Use useNavigate for navigation
+  const navigate = useNavigate();
   const handleNavigation = () => {
     if (link) {
       navigate(link);
@@ -55,9 +55,8 @@ function ContinueButton({ onClick = () => {}, link, type = "button", disabled = 
   );
 }
 
-
 function BackButton({ link, type = "button" }) {
-  const navigate = useNavigate(); // Use useNavigate for navigation
+  const navigate = useNavigate();
   const handleNavigation = () => {
     if (link) {
       navigate(link);
@@ -73,21 +72,22 @@ function BackButton({ link, type = "button" }) {
   );
 }
 
-function SelectButton({ isSelected, onClick, type = "button" }) {
+function SelectButton({ isSelected, onClick, type = "button", disabled = false }) {
   return (
     <BaseButton 
       className={`select-button ${isSelected ? 'selected' : ''}`} 
       onClick={onClick}
       type={type}
+      disabled={disabled}
     >
       <span className="select-button-text">{isSelected ? 'SELECTED' : 'SELECT'}</span>
     </BaseButton>
   );
 }
 
-function SubmitButton({ type = "submit", onClick }) {
+function SubmitButton({ type = "submit", onClick, disabled = false }) {
   return (
-    <BaseButton className="submit-button-link" type={type} onClick={onClick}>
+    <BaseButton className="submit-button-link" type={type} onClick={onClick} disabled={disabled}>
       <div className="submit-button-container">
         <span className="submit-button-text">Submit</span>
       </div>
@@ -95,9 +95,9 @@ function SubmitButton({ type = "submit", onClick }) {
   );
 }
 
-function PayButton({ type = "submit", onClick }) {
+function PayButton({ type = "submit", onClick, disabled = false }) {
   return (
-    <BaseButton className="submit-button-link" type={type} onClick={onClick}>
+    <BaseButton className="submit-button-link" type={type} onClick={onClick} disabled={disabled}>
       <div className="submit-button-container">
         <span className="submit-button-text">Proceed to payment</span>
       </div>
