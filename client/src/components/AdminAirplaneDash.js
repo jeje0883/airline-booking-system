@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
-import Spinner from 'react-bootstrap/Spinner'; // Import Spinner
+import Spinner from 'react-bootstrap/Spinner'; 
 import { Notyf } from 'notyf';
 import 'notyf/notyf.min.css';
 
@@ -40,10 +40,10 @@ export default function AdminAirplaneDash() {
     isActive: true
   });
 
-  // Loading states
-  const [loadingData, setLoadingData] = useState(true); // For initial data fetching
-  const [addingAirplane, setAddingAirplane] = useState(false); // For adding an airplane
-  const [togglingAirplaneId, setTogglingAirplaneId] = useState(null); // To track which airplane is being toggled
+
+  const [loadingData, setLoadingData] = useState(true);    
+  const [addingAirplane, setAddingAirplane] = useState(false);   
+  const [togglingAirplaneId, setTogglingAirplaneId] = useState(null);   
 
   useEffect(() => {
     const fetchAirplanes = async () => {
@@ -72,9 +72,9 @@ export default function AdminAirplaneDash() {
     fetchAirplanes();
   }, []);
 
-  // TOGGLE ACTIVE WHEN BUTTON UNDER STATUS IS CLICKED
+  
   const toggleIsActive = async (id, isActive) => {
-    setTogglingAirplaneId(id); // Set the ID of the airplane being toggled
+    setTogglingAirplaneId(id);   
     const action = isActive ? 'archive' : 'activate';
 
     try {
@@ -101,11 +101,11 @@ export default function AdminAirplaneDash() {
       notyf.error(`Error: ${error.message}`);
       console.error(`There was a problem with the ${action} operation:`, error);
     } finally {
-      setTogglingAirplaneId(null); // Reset toggling state
+      setTogglingAirplaneId(null);   
     }
   };
 
-  // HANDLE SORTING WHEN TABLE HEADER IS CLICKED
+   
   const handleSort = (key) => {
     let direction = "ascending";
     if (sortConfig.key === key && sortConfig.direction === "ascending") {
@@ -114,7 +114,7 @@ export default function AdminAirplaneDash() {
     setSortConfig({ key, direction });
   };
 
-  // HANDLE SORTING
+  
   const getSortedAirplanes = () => {
     const sortedAirplanes = Array.isArray(airplanes) ? [...airplanes] : [];
     if (sortConfig.key) {
@@ -135,25 +135,25 @@ export default function AdminAirplaneDash() {
       const searchValue = columnSearch[key];
 
       if (searchValue === "") {
-        return true; // If search input is empty, return all results
+        return true;  
       }
 
-      // Handle string searches (text)
+      
       if (typeof airplaneValue === "string") {
         return airplaneValue.toLowerCase().includes(searchValue.toLowerCase());
       }
 
-      // Handle number searches
+     
       if (typeof airplaneValue === "number") {
-        return airplaneValue === Number(searchValue); // Ensure both are numbers for comparison
+        return airplaneValue === Number(searchValue);   
       }
 
-      // Handle boolean searches
+       
       if (typeof airplaneValue === "boolean") {
         return airplaneValue === (searchValue === "true");
       }
 
-      return true; // Default return for unmatched cases
+      return true;   
     })
   );
 
@@ -231,8 +231,8 @@ export default function AdminAirplaneDash() {
   };
 
   const handleAddAirplane = async (event) => {
-    event.preventDefault(); // Prevent default form submission behavior
-    setAddingAirplane(true); // Start adding airplane
+    event.preventDefault();    
+    setAddingAirplane(true);   
 
     try {
       const response = await fetch(`${process.env.REACT_APP_API_URL}/airplanes/`, {
@@ -241,7 +241,7 @@ export default function AdminAirplaneDash() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
-        body: JSON.stringify(newAirplane), // Send the form data
+        body: JSON.stringify(newAirplane),   
       });
 
       const responseData = await response.json();
@@ -250,7 +250,7 @@ export default function AdminAirplaneDash() {
       }
 
       setAirplanes((prevAirplanes) => [...prevAirplanes, responseData]);
-      setAddModalVisible(false); // Close the modal after adding the airplane
+      setAddModalVisible(false);   
       setNewAirplane({
         planeId: "",
         brand: "",
@@ -262,13 +262,13 @@ export default function AdminAirplaneDash() {
         businessSeat: "0",
         firstClass: "0",
         isActive: true
-      }); // Reset form
+      });   
       notyf.success('Airplane added successfully.');
     } catch (error) {
       notyf.error(`Error adding airplane: ${error.message}`);
       console.error('There was a problem with adding the airplane:', error);
     } finally {
-      setAddingAirplane(false); // Stop adding airplane
+      setAddingAirplane(false);   
     }
   };
 
@@ -283,364 +283,366 @@ export default function AdminAirplaneDash() {
 
   return (
     <div className="dash-container">
-      <div className="d-flex justify-content-between mb-3">
-        <Button 
-          variant="primary" 
-          onClick={() => setAddModalVisible(true)}
-          disabled={loadingData} // Disable if data is loading
-        >
-          {loadingData ? (
-            <>
-              <Spinner
-                as="span"
-                animation="border"
-                size="sm"
-                role="status"
-                aria-hidden="true"
-              /> Loading...
-            </>
-          ) : (
-            "Add Airplane"
-          )}
-        </Button>
-        <Button 
-          variant="secondary" 
-          onClick={handleClearSearch} 
-          className="ms-2"
-          disabled={loadingData} // Disable if data is loading
-        >
-          Clear Search
-        </Button>
-        <select
-          className='ms-auto'
-          value={rowsPerPage}
-          onChange={(e) => setRowsPerPage(Number(e.target.value))}
-        >
-          <option value={10}>10</option>
-          <option value={20}>20</option>
-          <option value={50}>50</option>
-          <option value={100}>100</option>
-        </select>
-      </div>
-
-      {/* Loading Spinner for Data Fetching */}
-      {loadingData ? (
-        <div className="d-flex justify-content-center my-3">
-          <Spinner animation="border" role="status">
+      {/* Loading Modal */}
+      <Modal
+        show={loadingData}
+        centered
+        backdrop="static"
+        keyboard={false}
+      >
+        <Modal.Body className="d-flex align-items-center justify-content-center text-center">
+          <Spinner animation="border" role="status" className="me-3">
             <span className="visually-hidden">Loading...</span>
           </Spinner>
-        </div>
-      ) : (
-        <table>
-          <thead>
-            {/* Sorting Header Row */}
-            <tr>
-              {renderTableHeader("AIRPLANE ID", "planeId")}
-              {renderTableHeader("MAKER", "brand")}
-              {renderTableHeader("MODEL", "model")}
-              {renderTableHeader("AIRLINE", "airlineName")}
-              {renderTableHeader("SEATS", "totalSeats")}
-              {renderTableHeader("FIRST CLASS", "firstClass")}
-              {renderTableHeader("BUSINESS", "businessSeat")}
-              {renderTableHeader("PREMIUM", "premiumSeat")}
-              {renderTableHeader("ECONOMY", "economySeat")}
-              {renderTableHeader("STATUS", "isActive")}
-            </tr>
-            {/* Search Row */}
-            <tr>
-              {renderTableSearch("planeId", "text")}
-              {renderTableSearch("brand", "text")}
-              {renderTableSearch("model", "text")}
-              {renderTableSearch("airlineName", "text")}
-              {renderTableSearch("totalSeats", "number")}
-              {renderTableSearch("firstClass", "number")}
-              {renderTableSearch("businessSeat", "number")}
-              {renderTableSearch("premiumSeat", "number")}
-              {renderTableSearch("economySeat", "number")}
-              {renderTableSearch("isActive", "boolean")}
-            </tr>
-          </thead>
-          <tbody>
-            {Array.isArray(paginatedAirplanes) && paginatedAirplanes.length > 0 ? (
-              paginatedAirplanes.map((airplane) => (
-                <tr key={airplane._id} onClick={() => handleRowClick(airplane)}>
-                  <td>{airplane.planeId || 'N/A'}</td>
-                  <td>{airplane.brand || 'N/A'}</td>
-                  <td>{airplane.model || 'N/A'}</td>
-                  <td>{airplane.airlineName || 'N/A'}</td>
-                  <td>{airplane.totalSeats || 'N/A'}</td>
-                  <td>{airplane.firstClass || 'N/A'}</td>
-                  <td>{airplane.businessSeat || 'N/A'}</td>
-                  <td>{airplane.premiumSeat || 'N/A'}</td>
-                  <td>{airplane.economySeat || 'N/A'}</td>
-
-                  <td>
-                    <Button
-                     className="action-button"
-                      variant={airplane.isActive ? "success" : "danger"}
-                      onClick={(e) => {
-                        e.stopPropagation(); // Prevent row click event
-                        toggleIsActive(airplane._id, airplane.isActive);
-                      }}
-                      disabled={togglingAirplaneId === airplane._id} // Disable if this airplane is being toggled
-                    >
-                      {togglingAirplaneId === airplane._id ? (
-                        <Spinner
-                          as="span"
-                          animation="border"
-                          size="sm"
-                          role="status"
-                          aria-hidden="true"
-                        />
-                      ) : (
-                        airplane.isActive ? "Activated" : "Archived"
-                      )}
-                    </Button>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="10" className="text-center">No airplanes available</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      )}
-
-      {/* Pagination Controls */}
-      {!loadingData && Array.isArray(filteredAirplanes) && filteredAirplanes.length > 0 && (
-        <div className="pagination-controls">
-          <Button
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          >
-            Previous
-          </Button>
-          <span>Page {currentPage} of {totalPages}</span>
-          <Button
-            disabled={currentPage === totalPages}
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-          >
-            Next
-          </Button>
-        </div>
-      )}
-
-      {/* MODAL FOR DETAILS*/}
-      {selectedAirplane && (
-        <Modal show={isModalVisible} onHide={handleCloseModal} className="modal-details">
-          <Modal.Header closeButton>
-            <Modal.Title>Airplane Details</Modal.Title>
-          </Modal.Header>
-          <Modal.Body className="modal-details-body">
-            <p><strong>Airplane Id:</strong> {selectedAirplane.planeId || 'N/A'}</p>
-            <p><strong>Maker:</strong> {selectedAirplane.brand || 'N/A'}</p>
-            <p><strong>Model:</strong> {selectedAirplane.model || 'N/A'}</p>
-            <p><strong>Airline:</strong> {selectedAirplane.airlineName || 'N/A'}</p>
-            <p><strong>Total Seats:</strong> {selectedAirplane.totalSeats || 'N/A'}</p>
-            <p><strong>First Class:</strong> {selectedAirplane.firstClass || 'N/A'}</p>
-            <p><strong>Business Class:</strong> {selectedAirplane.businessSeat || 'N/A'}</p>
-            <p><strong>Premium Class:</strong> {selectedAirplane.premiumSeat || 'N/A'}</p>
-            <p><strong>Economy Class:</strong> {selectedAirplane.economySeat || 'N/A'}</p>
-            <p><strong>Status:</strong> {selectedAirplane.isActive ? "Active" : "Archived"}</p>
-            <p><strong>Created:</strong> {selectedAirplane.createdAt ? new Date(selectedAirplane.createdAt).toLocaleString() : 'N/A'}</p>
-            <p><strong>Last Update:</strong> {selectedAirplane.updatedAt ? new Date(selectedAirplane.updatedAt).toLocaleString() : 'N/A'}</p>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleCloseModal}>
-              Close
-            </Button>
-          </Modal.Footer>
-        </Modal>
-      )}
-
-      {/* MODAL FOR ADD AIRPLANE */}
-      <Modal show={isAddModalVisible} onHide={handleCloseAddModal} className="modal-add">
-        <Modal.Header closeButton>
-          <Modal.Title>Add New Airplane</Modal.Title>
-        </Modal.Header>
-        <Modal.Body className="modal-add-body">
-          <form onSubmit={handleAddAirplane}>
-            {/* Airplane ID */}
-            <div className="mb-3">
-              <label htmlFor="planeId" className="form-label">Airplane ID</label>
-              <input
-                type="text"
-                className="form-control"
-                id="planeId"
-                name="planeId"
-                value={newAirplane.planeId}
-                onChange={handleInputChange}
-                required
-                placeholder="Enter the airplane ID"
-              />
-            </div>
-
-            {/* Airplane Maker */}
-            <div className="mb-3">
-              <label htmlFor="brand" className="form-label">Airplane Maker</label>
-              <input
-                type="text"
-                className="form-control"
-                id="brand"
-                name="brand"
-                value={newAirplane.brand}
-                onChange={handleInputChange}
-                required
-                placeholder="Enter airplane brand"
-              />
-            </div>
-
-            {/* Airplane Model */}
-            <div className="mb-3">
-              <label htmlFor="model" className="form-label">Airplane Model</label>
-              <input
-                type="text"
-                className="form-control"
-                id="model"
-                name="model"
-                value={newAirplane.model}
-                onChange={handleInputChange}
-                required
-                placeholder="Enter airplane model"
-              />
-            </div>
-
-            {/* Airline Name */}
-            <div className="mb-3">
-              <label htmlFor="airlineName" className="form-label">Airline Name</label>
-              <input
-                type="text"
-                className="form-control"
-                id="airlineName"
-                name="airlineName"
-                value={newAirplane.airlineName}
-                onChange={handleInputChange}
-                required
-                placeholder="Enter airline name"
-              />
-            </div>
-
-            {/* Total Seats */}
-            <div className="mb-3">
-              <label htmlFor="totalSeats" className="form-label">Total Seats</label>
-              <input
-                type="number"
-                className="form-control"
-                id="totalSeats"
-                name="totalSeats"
-                value={newAirplane.totalSeats}
-                onChange={handleInputChange}
-                required
-                placeholder="Enter total seats"
-                min="0"
-              />
-            </div>
-
-            {/* First Class Seats */}
-            <div className="mb-3">
-              <label htmlFor="firstClass" className="form-label">First Class Seats</label>
-              <input
-                type="number"
-                className="form-control"
-                id="firstClass"
-                name="firstClass"
-                value={newAirplane.firstClass}
-                onChange={handleInputChange}
-                required
-                placeholder="Enter first class seats"
-                min="0"
-              />
-            </div>
-
-            {/* Business Class Seats */}
-            <div className="mb-3">
-              <label htmlFor="businessSeat" className="form-label">Business Class Seats</label>
-              <input
-                type="number"
-                className="form-control"
-                id="businessSeat"
-                name="businessSeat"
-                value={newAirplane.businessSeat}
-                onChange={handleInputChange}
-                required
-                placeholder="Enter business class seats"
-                min="0"
-              />
-            </div>
-
-            {/* Premium Seats */}
-            <div className="mb-3">
-              <label htmlFor="premiumSeat" className="form-label">Premium Seats</label>
-              <input
-                type="number"
-                className="form-control"
-                id="premiumSeat"
-                name="premiumSeat"
-                value={newAirplane.premiumSeat}
-                onChange={handleInputChange}
-                required
-                placeholder="Enter premium seats"
-                min="0"
-              />
-            </div>
-
-            {/* Economy Seats */}
-            <div className="mb-3">
-              <label htmlFor="economySeat" className="form-label">Economy Seats</label>
-              <input
-                type="number"
-                className="form-control"
-                id="economySeat"
-                name="economySeat"
-                value={newAirplane.economySeat}
-                onChange={handleInputChange}
-                required
-                placeholder="Enter economy seats"
-                min="0"
-              />
-            </div>
-
-            {/* Status (isActive) */}
-            <div className="mb-3">
-              <label htmlFor="isActive" className="form-label">Status</label>
-              <select
-                className="form-select"
-                id="isActive"
-                name="isActive"
-                value={newAirplane.isActive ? "true" : "false"}
-                onChange={(e) => setNewAirplane({ ...newAirplane, isActive: e.target.value === "true" })}
-                required
-              >
-                <option value="true">Activated</option>
-                <option value="false">Archived</option>
-              </select>
-            </div>
-
-            <Modal.Footer>
-              <Button variant="secondary" onClick={handleCloseAddModal}>
-                Close
-              </Button>
-              <Button type="submit" variant="primary" disabled={addingAirplane}>
-                {addingAirplane ? (
-                  <>
-                    <Spinner
-                      as="span"
-                      animation="border"
-                      size="sm"
-                      role="status"
-                      aria-hidden="true"
-                    /> Adding...
-                  </>
-                ) : (
-                  "Add Airplane"
-                )}
-              </Button>
-            </Modal.Footer>
-          </form>
+          <p className="mb-0">Loading data, please wait ...</p>
         </Modal.Body>
       </Modal>
+  
+      {/* Content when not loading */}
+      {!loadingData && (
+        <>
+          <div className="d-flex justify-content-between mb-3">
+            <Button 
+              variant="primary" 
+              onClick={() => setAddModalVisible(true)}
+              disabled={addingAirplane || togglingAirplaneId !== null}
+            >
+              Add Airplane
+            </Button>
+            <Button 
+              variant="secondary" 
+              onClick={handleClearSearch} 
+              className="ms-2"
+              disabled={addingAirplane || togglingAirplaneId !== null}
+            >
+              Clear Search
+            </Button>
+            <select
+              className='ms-auto'
+              value={rowsPerPage}
+              onChange={(e) => setRowsPerPage(Number(e.target.value))}
+            >
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+            </select>
+          </div>
+  
+          {/* Table */}
+          <table>
+            <thead>
+              <tr>
+                {renderTableHeader("AIRPLANE ID", "planeId")}
+                {renderTableHeader("MAKER", "brand")}
+                {renderTableHeader("MODEL", "model")}
+                {renderTableHeader("AIRLINE", "airlineName")}
+                {renderTableHeader("SEATS", "totalSeats")}
+                {renderTableHeader("FIRST CLASS", "firstClass")}
+                {renderTableHeader("BUSINESS", "businessSeat")}
+                {renderTableHeader("PREMIUM", "premiumSeat")}
+                {renderTableHeader("ECONOMY", "economySeat")}
+                {renderTableHeader("STATUS", "isActive")}
+              </tr>
+              <tr>
+                {renderTableSearch("planeId", "text")}
+                {renderTableSearch("brand", "text")}
+                {renderTableSearch("model", "text")}
+                {renderTableSearch("airlineName", "text")}
+                {renderTableSearch("totalSeats", "number")}
+                {renderTableSearch("firstClass", "number")}
+                {renderTableSearch("businessSeat", "number")}
+                {renderTableSearch("premiumSeat", "number")}
+                {renderTableSearch("economySeat", "number")}
+                {renderTableSearch("isActive", "boolean")}
+              </tr>
+            </thead>
+            <tbody>
+              {Array.isArray(paginatedAirplanes) && paginatedAirplanes.length > 0 ? (
+                paginatedAirplanes.map((airplane) => (
+                  <tr key={airplane._id} onClick={() => handleRowClick(airplane)}>
+                    <td>{airplane.planeId || 'N/A'}</td>
+                    <td>{airplane.brand || 'N/A'}</td>
+                    <td>{airplane.model || 'N/A'}</td>
+                    <td>{airplane.airlineName || 'N/A'}</td>
+                    <td>{airplane.totalSeats || 'N/A'}</td>
+                    <td>{airplane.firstClass || 'N/A'}</td>
+                    <td>{airplane.businessSeat || 'N/A'}</td>
+                    <td>{airplane.premiumSeat || 'N/A'}</td>
+                    <td>{airplane.economySeat || 'N/A'}</td>
+                    <td>
+                      <Button
+                        className="action-button"
+                        variant={airplane.isActive ? "success" : "danger"}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleIsActive(airplane._id, airplane.isActive);
+                        }}
+                        disabled={togglingAirplaneId === airplane._id}
+                      >
+                        {togglingAirplaneId === airplane._id ? (
+                          <>
+                            <Spinner
+                              as="span"
+                              animation="border"
+                              size="sm"
+                              role="status"
+                              aria-hidden="true"
+                            /> Toggling...
+                          </>
+                        ) : (
+                          airplane.isActive ? "Activated" : "Archived"
+                        )}
+                      </Button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="10" className="text-center">No airplanes available</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+  
+          {/* Pagination Controls */}
+          {Array.isArray(filteredAirplanes) && filteredAirplanes.length > 0 && (
+            <div className="pagination-controls">
+              <Button
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              >
+                Previous
+              </Button>
+              <span>Page {currentPage} of {totalPages}</span>
+              <Button
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              >
+                Next
+              </Button>
+            </div>
+          )}
+  
+          {/* Details Modal */}
+          {selectedAirplane && (
+            <Modal show={isModalVisible} onHide={handleCloseModal} className="modal-details">
+              <Modal.Header closeButton>
+                <Modal.Title>Airplane Details</Modal.Title>
+              </Modal.Header>
+              <Modal.Body className="modal-details-body">
+                <p><strong>Airplane Id:</strong> {selectedAirplane.planeId || 'N/A'}</p>
+                <p><strong>Maker:</strong> {selectedAirplane.brand || 'N/A'}</p>
+                <p><strong>Model:</strong> {selectedAirplane.model || 'N/A'}</p>
+                <p><strong>Airline:</strong> {selectedAirplane.airlineName || 'N/A'}</p>
+                <p><strong>Total Seats:</strong> {selectedAirplane.totalSeats || 'N/A'}</p>
+                <p><strong>First Class:</strong> {selectedAirplane.firstClass || 'N/A'}</p>
+                <p><strong>Business Class:</strong> {selectedAirplane.businessSeat || 'N/A'}</p>
+                <p><strong>Premium Class:</strong> {selectedAirplane.premiumSeat || 'N/A'}</p>
+                <p><strong>Economy Class:</strong> {selectedAirplane.economySeat || 'N/A'}</p>
+                <p><strong>Status:</strong> {selectedAirplane.isActive ? "Active" : "Archived"}</p>
+                <p><strong>Created:</strong> {selectedAirplane.createdAt ? new Date(selectedAirplane.createdAt).toLocaleString() : 'N/A'}</p>
+                <p><strong>Last Update:</strong> {selectedAirplane.updatedAt ? new Date(selectedAirplane.updatedAt).toLocaleString() : 'N/A'}</p>
+           </Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={handleCloseModal}>
+                  Close
+                </Button>
+              </Modal.Footer>
+            </Modal>
+          )}
+  
+          {/* Add Airplane Modal */}
+          <Modal show={isAddModalVisible} onHide={handleCloseAddModal} className="modal-add">
+            <Modal.Header closeButton>
+              <Modal.Title>Add New Airplane</Modal.Title>
+            </Modal.Header>
+            <Modal.Body className="modal-add-body">
+             <form onSubmit={handleAddAirplane}>
+               {/* Airplane ID */}
+               <div className="mb-3">
+                 <label htmlFor="planeId" className="form-label">Airplane ID</label>
+                 <input
+                   type="text"
+                   className="form-control"
+                   id="planeId"
+                   name="planeId"
+                   value={newAirplane.planeId}
+                   onChange={handleInputChange}
+                   required
+                   placeholder="Enter the airplane ID"
+                 />
+               </div>
+
+               {/* Airplane Maker */}
+               <div className="mb-3">
+                 <label htmlFor="brand" className="form-label">Airplane Maker</label>
+                 <input
+                   type="text"
+                   className="form-control"
+                   id="brand"
+                   name="brand"
+                   value={newAirplane.brand}
+                   onChange={handleInputChange}
+                   required
+                   placeholder="Enter airplane brand"
+                 />
+               </div>
+
+               {/* Airplane Model */}
+               <div className="mb-3">
+                 <label htmlFor="model" className="form-label">Airplane Model</label>
+                 <input
+                   type="text"
+                   className="form-control"
+                   id="model"
+                   name="model"
+                   value={newAirplane.model}
+                   onChange={handleInputChange}
+                   required
+                   placeholder="Enter airplane model"
+                 />
+               </div>
+
+               {/* Airline Name */}
+               <div className="mb-3">
+                 <label htmlFor="airlineName" className="form-label">Airline Name</label>
+                 <input
+                   type="text"
+                   className="form-control"
+                   id="airlineName"
+                   name="airlineName"
+                   value={newAirplane.airlineName}
+                   onChange={handleInputChange}
+                   required
+                   placeholder="Enter airline name"
+                 />
+               </div>
+
+               {/* Total Seats */}
+               <div className="mb-3">
+                 <label htmlFor="totalSeats" className="form-label">Total Seats</label>
+                 <input
+                   type="number"
+                   className="form-control"
+                   id="totalSeats"
+                   name="totalSeats"
+                   value={newAirplane.totalSeats}
+                   onChange={handleInputChange}
+                   required
+                   placeholder="Enter total seats"
+                   min="0"
+                 />
+               </div>
+
+               {/* First Class Seats */}
+               <div className="mb-3">
+                 <label htmlFor="firstClass" className="form-label">First Class Seats</label>
+                 <input
+                   type="number"
+                   className="form-control"
+                   id="firstClass"
+                   name="firstClass"
+                   value={newAirplane.firstClass}
+                   onChange={handleInputChange}
+                   required
+                   placeholder="Enter first class seats"
+                   min="0"
+                 />
+               </div>
+
+               {/* Business Class Seats */}
+               <div className="mb-3">
+                 <label htmlFor="businessSeat" className="form-label">Business Class Seats</label>
+                 <input
+                   type="number"
+                   className="form-control"
+                   id="businessSeat"
+                   name="businessSeat"
+                   value={newAirplane.businessSeat}
+                   onChange={handleInputChange}
+                   required
+                   placeholder="Enter business class seats"
+                   min="0"
+                 />
+               </div>
+
+               {/* Premium Seats */}
+               <div className="mb-3">
+                 <label htmlFor="premiumSeat" className="form-label">Premium Seats</label>
+                 <input
+                   type="number"
+                   className="form-control"
+                   id="premiumSeat"
+                   name="premiumSeat"
+                   value={newAirplane.premiumSeat}
+                   onChange={handleInputChange}
+                   required
+                   placeholder="Enter premium seats"
+                   min="0"
+                 />
+               </div>
+
+               {/* Economy Seats */}
+               <div className="mb-3">
+                 <label htmlFor="economySeat" className="form-label">Economy Seats</label>
+                 <input
+                   type="number"
+                   className="form-control"
+                   id="economySeat"
+                   name="economySeat"
+                   value={newAirplane.economySeat}
+                   onChange={handleInputChange}
+                   required
+                   placeholder="Enter economy seats"
+                   min="0"
+                 />
+               </div>
+
+               {/* Status (isActive) */}
+               <div className="mb-3">
+                 <label htmlFor="isActive" className="form-label">Status</label>
+                 <select
+                   className="form-select"
+                   id="isActive"
+                   name="isActive"
+                   value={newAirplane.isActive ? "true" : "false"}
+                   onChange={(e) => setNewAirplane({ ...newAirplane, isActive: e.target.value === "true" })}
+                   required
+                 >
+                   <option value="true">Activated</option>
+                   <option value="false">Archived</option>
+                 </select>
+               </div>
+
+               <Modal.Footer>
+                 <Button variant="secondary" onClick={handleCloseAddModal}>
+                   Close
+                 </Button>
+                 <Button type="submit" variant="primary" disabled={addingAirplane}>
+                   {addingAirplane ? (
+                     <>
+                       <Spinner
+                         as="span"
+                         animation="border"
+                         size="sm"
+                         role="status"
+                         aria-hidden="true"
+                       /> Adding...
+                     </>
+                   ) : (
+                     "Add Airplane"
+                   )}
+                 </Button>
+               </Modal.Footer>
+             </form>
+           </Modal.Body>
+          </Modal>
+        </>
+      )}
     </div>
   );
+  
+
+
 }
