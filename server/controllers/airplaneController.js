@@ -145,8 +145,29 @@ const AirplaneController = {
       console.error('Error fetching Airplanes:', error);
       res.status(500).json({ message: 'Error fetching planes', error });
     }
-  }
+  },
   
+  async viewAllActiveAirplanes(req, res) {
+    try {
+
+      console.log('Fetching all Airplanes...');
+      // Query the database and log the raw result
+      const airplanes = await Airplane.find({isActive:true});
+      // console.log('Raw Airplanes data:', airplanes);
+
+  
+      if (!airplanes || airplanes.length === 0) {
+        console.log('No Airplanes found');
+        return res.status(404).json({ message: 'No airplanes found' });
+      }
+  
+      res.status(200).json(airplanes);
+    } catch (error) {
+      console.error('Error fetching Airplanes:', error);
+      res.status(500).json({ message: 'Error fetching planes', error });
+    }
+  }
+
   
 };
 

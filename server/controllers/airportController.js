@@ -114,6 +114,26 @@ const AirportController = {
     }
   },
 
+  async viewAllActiveAirports(req, res) {
+    console.log('Fetching all active Airports...');
+    try {
+      // Query the database and log the raw result
+      const airports = await Airport.find({isActive: true});
+      console.log('Retrieved Airports:', airports);
+
+      if (!airports || airports.length === 0) {
+        console.log('No Airports found');
+        return res.status(404).json({ message: 'No Airports found' });
+      }
+
+      res.status(200).json(airports);
+    } catch (error) {
+      console.error('Error fetching Airports:', error);
+      res.status(500).json({ message: 'Error fetching Airports', error });
+    }
+  },
+
+
   // Get Airport details by _id
   async getAirportDetails(req, res) {
     console.log('getAirportDetails called with id:', req.params.id);

@@ -146,7 +146,26 @@ const pricingController = {
       console.error('Error fetching pricings:', error); // Debugging
       res.status(500).json({ message: 'Error fetching pricings', error });
     }
+  },
+
+  async viewAllActivePricing(req, res) {
+    try {
+      console.log('Received request to view all pricing'); // Debugging
+
+      const pricings = await Pricing.find({isActive:true});
+      if (!pricings || pricings.length === 0) {
+        console.log('No pricings found'); // Debugging
+        return res.status(404).json({ message: 'No pricings found' });
+      }
+
+      // console.log('All pricings:', pricings); // Debugging
+      res.status(200).json(pricings);
+    } catch (error) {
+      console.error('Error fetching pricings:', error); // Debugging
+      res.status(500).json({ message: 'Error fetching pricings', error });
+    }
   }
+
 };
 
 module.exports = pricingController;

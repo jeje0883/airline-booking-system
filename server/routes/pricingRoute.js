@@ -14,6 +14,8 @@ router.patch('/:id/archive/', pricingController.archivePricing);
 // Route to activate pricing
 router.patch('/:id/activate/', pricingController.activatePricing);
 
+router.get('/allactive', pricingController.viewAllActivePricing);
+
 // Route to view all pricing
 router.get('/all', pricingController.viewAllPricing);
 

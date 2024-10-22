@@ -8,6 +8,7 @@ router.post('/', routeController.addRoute);
 router.put('/:id', routeController.editRoute);
 router.patch('/archive/:id', routeController.archiveRoute);
 router.patch('/activate/:id', routeController.activateRoute);
+router.get('/allactive', routeController.viewAllActiveRoutes);
 router.get('/all', routeController.viewAllRoutes);
 router.get('/:id', routeController.getRouteDetails);
 

@@ -10,6 +10,7 @@ router.post('/', airplaneController.addAirplane);
 router.put('/:id', airplaneController.editAirplane); // For editing
 router.patch('/:id/archive/', airplaneController.archiveAirplane); // For archiving
 router.patch('/:id/activate/', airplaneController.activateAirplane); // For activating
+router.get('/allactive', airplaneController.viewAllActiveAirplanes); // For viewing all planes
 router.get('/all', airplaneController.viewAllAirplanes); // For viewing all planes
 router.get('/:id', airplaneController.getAirplaneDetails); // For fetching details
 

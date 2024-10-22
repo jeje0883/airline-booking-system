@@ -145,6 +145,21 @@ const routeController = {
     }
   },
 
+  async viewAllActiveRoutes(req, res) {
+    try {
+      console.log('Fetching all active Routes...');
+      const routes = await Route.find({isActive:true}).populate('departure').populate('destination');
+      // console.log('Raw Routes data:', routes);
+      
+      if (!routes || routes.length === 0) {
+        return res.status(404).json({ message: 'No routes found' });
+      }
+      res.status(200).json(routes);
+    } catch (error) {
+      res.status(500).json({ message: 'Error fetching routes', error });
+    }
+  },
+
   // Get route details by ID
   async getRouteDetails(req, res) {
     try {
