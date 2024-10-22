@@ -60,8 +60,8 @@ export default function AdminFlightDash() {
       try {
         const [flightsRes, airplanesRes, routesRes, pricingRes] = await Promise.all([
           fetch(`${process.env.REACT_APP_API_URL}/flights/all`),
-          fetch(`${process.env.REACT_APP_API_URL}/airplanes/all`),
-          fetch(`${process.env.REACT_APP_API_URL}/routes/all`),
+          fetch(`${process.env.REACT_APP_API_URL}/airplanes/allactive`),
+          fetch(`${process.env.REACT_APP_API_URL}/routes/allactive`),
           fetch(`${process.env.REACT_APP_API_URL}/pricing/all`) 
         ]);
         const flightsData = await flightsRes.json();
@@ -201,63 +201,13 @@ export default function AdminFlightDash() {
     setDateRange({ start: "", end: "" });
   };
 
-
-
-  //   const handleGenerateCommercialFlights = async () => {
-  //     if (!flightToGenerate || !dateRange.start || !dateRange.end || !selectedPrice) {
-  //       notyf.error("Please select a flight, date range, and price.");
-  //       return;
-  //     }
-    
-  //     const startDate = new Date(dateRange.start);
-  //     const endDate = new Date(dateRange.end);
-  //     const generatedFlights = [];
-    
-  //     for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-  //       if (d.getDay() + 1 === parseInt(flightToGenerate.day)) {
-  //         // Use the time directly from flightToGenerate
-  //         const departureTime = flightToGenerate.time; // e.g., "14:30"
-    
-  //         generatedFlights.push({
-  //           flightId: flightToGenerate._id, // Use only the flight ID here
-  //           date: new Date(d).toISOString().split('T')[0], // Store the date as "YYYY-MM-DD"
-  //           priceId: selectedPrice,
-  //           departureTime: departureTime, // Store the time as a string (e.g., "14:30")
-  //         });
-  //       }
-  //     }
-  
-  //   console.log(`generatedFlights ${JSON.stringify(generatedFlights)}`);
-  
-  //   try {
-  //     const response = await fetch(`${process.env.REACT_APP_API_URL}/commercialflights/multiple`, {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify({ flights: generatedFlights }),
-  //     });
-  
-  //     const responseData = await response.json();
-  //     if (!response.ok) {
-  //       throw new Error(`Failed to generate commercial flights: ${response.status} ${responseData.message}`);
-  //     }
-  
-  //     notyf.success("Commercial flights generated successfully.");
-  //     setCommercialFlights((prev) => [...prev, ...responseData.added]); // Use responseData.added to update the list
-  //     setGenerateModalVisible(false);
-  //   } catch (error) {
-  //     console.error('Error generating commercial flights:', error); // Log the error for debugging
-  //     notyf.error('Error generating commercial flights.');
-  //   }
-  // };
  
   const handleGenerateCommercialFlights = async () => {
     if (!flightToGenerate || !dateRange.start || !dateRange.end || !selectedPrice) {
       notyf.error("Please select a flight, date range, and price.");
       return;
     }
-    setLoading(true);
+    //setLoading(true);
     const startDate = new Date(dateRange.start);
     const endDate = new Date(dateRange.end);
     const generatedFlights = [];
@@ -314,11 +264,10 @@ export default function AdminFlightDash() {
       console.error('Error generating commercial flights:', error); // Log the error for debugging
       notyf.error('Error generating commercial flights.');
     } finally {
-      setLoading(false);
+      //setLoading(false);
     }
   };
   
- 
  
  
   const renderTableSearch = (key, type) => (
@@ -452,355 +401,455 @@ export default function AdminFlightDash() {
   };
   
 
-  return (
-    <div className="dash-container">
-          {loading && (
-              <div className="spinner-overlay">
-                <Spinner animation="border" role="status" variant="primary">
-                  <span className="visually-hidden">Loading...</span>
-                </Spinner>
-              </div>
-            )}
-      <div className="d-flex justify-content-between mb-3">
-        <Button variant="primary" onClick={() => setAddModalVisible(true)}>Add Flight</Button>
-        <Button variant="secondary" onClick={() => setColumnSearch({
-          'flightNo': "",
-          'airplane.planeId': "",
-          'route.departure.airportCity': "",
-          'route.departure.airportName': "",
-          'route.destination.airportCity': "",
-          'route.destination.airportName': "",
-          'airplane.totalSeats': "",
-          'day': "",
-          'time': "",
-          'isActive': ""
-        })} className="ms-2">Clear Search</Button>
-        <select
-          className='ms-auto'
-          value={rowsPerPage}
-          onChange={(e) => setRowsPerPage(Number(e.target.value))}
-        >
-          <option value={10}>10</option>
-          <option value={20}>20</option>
-          <option value={50}>50</option>
-          <option value={100}>100</option>
-        </select>
-      </div>
 
-      <table>
-        <thead>
-          <tr>
-       
-            {renderTableHeader("Flight No", ["flightNo"])}
-            {renderTableHeader("Airplane Id", ["airplane", "planeId"])}
-            {renderTableHeader("Departure City", ["route", "departure", "airportCity"])}
-            {renderTableHeader("Departure Airport", ["route", "departure", "airportName"])}
-            {renderTableHeader("Destination City", ["route", "destination", "airportCity"])}
-            {renderTableHeader("Destination Airport", ["route", "destination", "airportName"])}
-            {renderTableHeader("Total Seats", ["airplane", "totalSeats"])}
-            {renderTableHeader("Days", ["days"])}
-            {renderTableHeader("Time", ["time"])}
-            {renderTableHeader("Status", ["isActive"])}
-            <th>Action</th>
-            
-          </tr>
-          {/* Added search inputs below the headers */}
-          <tr>
-            {renderTableSearch('flightNo', 'text')}
-            {renderTableSearch('airplane.planeId', 'text')}
-            {renderTableSearch('route.departure.airportCity', 'text')}
-            {renderTableSearch('route.departure.airportName', 'text')}
-            {renderTableSearch('route.destination.airportCity', 'text')}
-            {renderTableSearch('route.destination.airportName', 'text')}
-            {renderTableSearch('airplane.totalSeats', 'number')}
-            {renderTableSearch('days', 'days')}
-            {renderTableSearch('time', 'text')}
-            {renderTableSearch('isActive', 'boolean')}
-            <td></td>
-          </tr>
-        </thead>
-        <tbody>
-          {paginatedFlights.length > 0 ? (
-            paginatedFlights.map((flight) => (
-              <tr key={flight?._id} onClick={() => handleRowClick(flight)}>
-                <td>{flight?.flightNo || 'N/A'}</td>
-                <td>{flight?.airplane?.planeId || 'N/A'}</td>
-                <td>{flight?.route?.departure?.airportCity || 'N/A'}</td>
-                <td>{flight?.route?.departure?.airportName || 'N/A'}</td>
-                <td>{flight?.route?.destination?.airportCity || 'N/A'}</td>
-                <td>{flight?.route?.destination?.airportName || 'N/A'}</td>
-                <td>{flight?.airplane?.totalSeats || 'N/A'}</td>
-                <td>
-                  {flight?.days && flight.days.length > 0
-                    ? mapDaysToWeekdays(flight.days).join(', ')
-                    : 'N/A'}
-                </td>
-                <td>{flight?.time || 'N/A'}</td>
-                <td>
-                  <Button
-                  className="action-button"
-                    variant={flight?.isActive ? "success" : "danger"}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleIsActive(flight?._id, flight?.isActive);
-                    }}
-                  >
-                    {flight?.isActive ? "Activated" : "Archived"}
-                  </Button>
-                </td>
-                <td>
-                  <Button 
-                  className="action-button-commercial" 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    openGenerateModal(flight);
-                  }}>Commercial Flight</Button>
-                </td>
-              </tr>
-            ))
-          ) : (
+return (
+  <div className="dash-container">
+    {/* Loading Modal */}
+    <Modal
+      show={loading}
+      centered
+      backdrop="static"
+      keyboard={false}
+    >
+      <Modal.Body className="d-flex align-items-center justify-content-center text-center">
+        <Spinner animation="border" role="status" className="me-3">
+          <span className="visually-hidden">Loading...</span>
+        </Spinner>
+        <p className="mb-0">Loading data, please wait...</p>
+      </Modal.Body>
+    </Modal>
+
+    {/* Content when not loading */}
+    {!loading && (
+      <>
+        <div className="d-flex justify-content-between mb-3">
+          <Button variant="primary" onClick={() => setAddModalVisible(true)}>Add Flight</Button>
+          <Button
+            variant="secondary"
+            onClick={() =>
+              setColumnSearch({
+                'flightNo': "",
+                'airplane.planeId': "",
+                'route.departure.airportCity': "",
+                'route.departure.airportName': "",
+                'route.destination.airportCity': "",
+                'route.destination.airportName': "",
+                'airplane.totalSeats': "",
+                'day': "",
+                'time': "",
+                'isActive': ""
+              })
+            }
+            className="ms-2"
+          >
+            Clear Search
+          </Button>
+          <select
+            className="ms-auto"
+            value={rowsPerPage}
+            onChange={(e) => setRowsPerPage(Number(e.target.value))}
+          >
+            <option value={10}>10</option>
+            <option value={20}>20</option>
+            <option value={50}>50</option>
+            <option value={100}>100</option>
+          </select>
+        </div>
+
+        <table>
+          <thead>
             <tr>
-              <td colSpan="11">No flights available</td>
+              {renderTableHeader("Flight No", ["flightNo"])}
+              {renderTableHeader("Airplane Id", ["airplane", "planeId"])}
+              {renderTableHeader("Departure City", ["route", "departure", "airportCity"])}
+              {renderTableHeader("Departure Airport", ["route", "departure", "airportName"])}
+              {renderTableHeader("Destination City", ["route", "destination", "airportCity"])}
+              {renderTableHeader("Destination Airport", ["route", "destination", "airportName"])}
+              {renderTableHeader("Total Seats", ["airplane", "totalSeats"])}
+              {renderTableHeader("Days", ["days"])}
+              {renderTableHeader("Time", ["time"])}
+              {renderTableHeader("Status", ["isActive"])}
+              <th>Action</th>
             </tr>
-          )}
-        </tbody>
-      </table>
+            {/* Search Inputs */}
+            <tr>
+              {renderTableSearch('flightNo', 'text')}
+              {renderTableSearch('airplane.planeId', 'text')}
+              {renderTableSearch('route.departure.airportCity', 'text')}
+              {renderTableSearch('route.departure.airportName', 'text')}
+              {renderTableSearch('route.destination.airportCity', 'text')}
+              {renderTableSearch('route.destination.airportName', 'text')}
+              {renderTableSearch('airplane.totalSeats', 'number')}
+              {renderTableSearch('days', 'days')}
+              {renderTableSearch('time', 'text')}
+              {renderTableSearch('isActive', 'boolean')}
+              <td></td>
+            </tr>
+          </thead>
+          <tbody>
+            {paginatedFlights.length > 0 ? (
+              paginatedFlights.map((flight) => (
+                <tr key={flight?._id} onClick={() => handleRowClick(flight)}>
+                  <td>{flight?.flightNo || 'N/A'}</td>
+                  <td>{flight?.airplane?.planeId || 'N/A'}</td>
+                  <td>{flight?.route?.departure?.airportCity || 'N/A'}</td>
+                  <td>{flight?.route?.departure?.airportName || 'N/A'}</td>
+                  <td>{flight?.route?.destination?.airportCity || 'N/A'}</td>
+                  <td>{flight?.route?.destination?.airportName || 'N/A'}</td>
+                  <td>{flight?.airplane?.totalSeats || 'N/A'}</td>
+                  <td>
+                    {flight?.days && flight.days.length > 0
+                      ? mapDaysToWeekdays(flight.days).join(', ')
+                      : 'N/A'}
+                  </td>
+                  <td>{flight?.time || 'N/A'}</td>
+                  <td>
+                    <Button
+                      className="action-button"
+                      variant={flight?.isActive ? "success" : "danger"}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleIsActive(flight?._id, flight?.isActive);
+                      }}
+                    >
+                      {flight?.isActive ? "Activated" : "Archived"}
+                    </Button>
+                  </td>
+                  <td>
+                    <Button
+                      className="action-button-commercial"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openGenerateModal(flight);
+                      }}
+                    >
+                      Commercial Flight
+                    </Button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="11">No flights available</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
 
-      <div className="pagination-controls">
-        <Button
-          disabled={currentPage === 1}
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-        >
-          Previous
-        </Button>
-        <span>Page {currentPage} of {totalPages}</span>
-        <Button
-          disabled={currentPage === totalPages}
-          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-        >
-          Next
-        </Button>
-      </div>
+        {/* Pagination Controls */}
+        <div className="pagination-controls">
+          <Button
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          >
+            Previous
+          </Button>
+          <span>
+            Page {currentPage} of {totalPages}
+          </span>
+          <Button
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+          >
+            Next
+          </Button>
+        </div>
 
-      {/* MODAL FOR FLIGHT DETAILS */}
-      {selectedFlight && (
-  <Modal show={isModalVisible} onHide={handleCloseModal} className="modal-details">
-    <Modal.Header closeButton>
-      <Modal.Title>Flight Details</Modal.Title>
-    </Modal.Header>
-    <Modal.Body className="modal-details-body">
-      {/* <div> */}
-        <h5>Flight Information</h5>
-        <p><strong>Flight No:</strong> {selectedFlight?.flightNo || 'N/A'}</p>
-        <p><strong>Time:</strong> {selectedFlight?.time || 'N/A'}</p>
-        <p><strong>Days:</strong> {selectedFlight?.days && selectedFlight.days.length > 0
-          ? mapDaysToWeekdays(selectedFlight.days).join(', ')
-          : 'N/A'}</p>
-        <p><strong>Status:</strong> {selectedFlight?.isActive ? 'Active' : 'Inactive'}</p>
-        <p><strong>Created At:</strong> {new Date(selectedFlight?.createdAt).toLocaleString() || 'N/A'}</p>
-        <p><strong>Updated At:</strong> {new Date(selectedFlight?.updatedAt).toLocaleString() || 'N/A'}</p>
-      {/* </div> */}
-      <hr />
-      {/* <div> */}
-        <h5>Airplane Details</h5>
-        <p><strong>Plane ID:</strong> {selectedFlight?.airplane?.planeId || 'N/A'}</p>
-        <p><strong>Brand:</strong> {selectedFlight?.airplane?.brand || 'N/A'}</p>
-        <p><strong>Model:</strong> {selectedFlight?.airplane?.model || 'N/A'}</p>
-        <p><strong>Airline Name:</strong> {selectedFlight?.airplane?.airlineName || 'N/A'}</p>
-        <p><strong>Total Seats:</strong> {selectedFlight?.airplane?.totalSeats || 'N/A'}</p>
-        <p><strong>Economy Seats:</strong> {selectedFlight?.airplane?.economySeat || 'N/A'}</p>
-        <p><strong>Premium Seats:</strong> {selectedFlight?.airplane?.premiumSeat || 'N/A'}</p>
-        <p><strong>Business Seats:</strong> {selectedFlight?.airplane?.businessSeat || 'N/A'}</p>
-        <p><strong>First Class Seats:</strong> {selectedFlight?.airplane?.firstClass || 'N/A'}</p>
-        <p><strong>Status:</strong> {selectedFlight?.airplane?.isActive ? 'Active' : 'Inactive'}</p>
-      {/* </div> */}
-      <hr />
-      {/* <div> */}
-        <h5>Route Details</h5>
-        <p><strong>Departure Airport:</strong> {selectedFlight?.route?.departure?.airportName || 'N/A'} ({selectedFlight?.route?.departure?.airportCode || 'N/A'})</p>
-        <p><strong>Departure City:</strong> {selectedFlight?.route?.departure?.airportCity || 'N/A'}</p>
-        <p><strong>Departure Country:</strong> {selectedFlight?.route?.departure?.airportCountry || 'N/A'}</p>
-        <p><strong>Destination Airport:</strong> {selectedFlight?.route?.destination?.airportName || 'N/A'} ({selectedFlight?.route?.destination?.airportCode || 'N/A'})</p>
-        <p><strong>Destination City:</strong> {selectedFlight?.route?.destination?.airportCity || 'N/A'}</p>
-        <p><strong>Destination Country:</strong> {selectedFlight?.route?.destination?.airportCountry || 'N/A'}</p>
-        <p><strong>Distance (KM):</strong> {selectedFlight?.route?.distanceKM || 'N/A'}</p>
-        <p><strong>Duration (Minutes):</strong> {selectedFlight?.route?.durationMins || 'N/A'}</p>
-        <p><strong>Status:</strong> {selectedFlight?.route?.isActive ? 'Active' : 'Inactive'}</p>
-      {/* </div> */}
-    </Modal.Body>
-    <Modal.Footer>
-      <Button variant="secondary" onClick={handleCloseModal}>Close</Button>
-    </Modal.Footer>
-  </Modal>
-)}
-
-      {/* MODAL FOR GENERATING COMMERCIAL FLIGHTS */}
-      <Modal show={isGenerateModalVisible} onHide={handleCloseGenerateModal}>
-        <Modal.Header closeButton>
-        <Modal.Title>
-            {flightToGenerate
-              ? `${flightToGenerate.flightNo} - ${flightToGenerate.route.departure.airportCode} (${flightToGenerate.route.destination.airportCode}) - ${mapDaysToWeekdays(flightToGenerate.days).join(', ')}`
-              : "Generate Commercial Flights"}
-          </Modal.Title>
-
-        </Modal.Header>
-        <Modal.Body>
-          <div>
-            <label>Start Date:</label>
-            <input
-              type="date"
-              value={dateRange.start}
-              onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
-            />
-          </div>
-          <div>
-            <label>End Date:</label>
-            <input
-              type="date"
-              value={dateRange.end}
-              onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
-            />
-          </div>
-          <div>
-            <label>Select Pricing:</label>
-            <select
-              value={selectedPrice}
-              onChange={(e) => setSelectedPrice(e.target.value)}
-            >
-              <option value="">Select Pricing</option>
-              {pricings.map((price) => (
-                <option key={price._id} value={price._id}>
-                  {`${price.priceName}`}
-                </option>
-              ))}
-            </select>
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseGenerateModal}>Close</Button>
-          <Button variant="primary" onClick={handleGenerateCommercialFlights}>Generate</Button>
-        </Modal.Footer>
-      </Modal>
-
-      {/* MODAL FOR ADDING A NEW FLIGHT */}
-      <Modal show={isAddModalVisible} onHide={handleCloseAddModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Add New Flight</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <form onSubmit={handleAddFlight}>
-            <div className="mb-3">
-              <label htmlFor="flightNo" className="form-label">Flight No</label>
-              <input
-                type="text"
-                className="form-control"
-                id="flightNo"
-                name="flightNo"
-                value={newFlight.flightNo}
-                onChange={handleInputChange}
-                required
-                placeholder="Enter flight number"
-              />
-            </div>
-
-            <div className="mb-3">
-              <label htmlFor="airplane" className="form-label">Airplane</label>
-              <select
-                className="form-select"
-                id="airplane"
-                name="airplane"
-                value={newFlight.airplane}
-                onChange={handleInputChange}
-                required
-              >
-                <option value="">Select Airplane</option>
-                {airplanes.map((plane) => (
-                  <option key={plane._id} value={plane._id}>
-                    {plane.planeId}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="mb-3">
-              <label htmlFor="route" className="form-label">Route</label>
-              <select
-                className="form-select"
-                id="route"
-                name="route"
-                value={newFlight.route}
-                onChange={handleInputChange}
-                required
-              >
-                <option value="">Select Route</option>
-                {routes.map((route) => (
-                  <option key={route._id} value={route._id}>
-                    {`${route.departure.airportCity} (${route.departure.airportCode}) - ${route.destination.airportCity} (${route.destination.airportCode})`}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-
-            <div className="mb-3">
-              <label className="form-label">Days</label>
-              <div className="toggle-button-group mb-3">
-                {[
-                  { name: 'Sun', value: '1' },
-                  { name: 'Mon', value: '2' },
-                  { name: 'Tue', value: '3' },
-                  { name: 'Wed', value: '4' },
-                  { name: 'Thu', value: '5' },
-                  { name: 'Fri', value: '6' },
-                  { name: 'Sat', value: '7' },
-                ].map((day, idx) => (
-                  <ToggleButton
-                    key={idx}
-                    id={`toggle-day-${idx}`}
-                    type="checkbox"
-                    variant="outline-success"  // Add this back
-                    value={day.value}
-                    checked={newFlight.days.includes(day.value)}
-                    onChange={handleDayChange}
-                    className="toggle-button"
-                  >
-                    {day.name}
-                </ToggleButton>
-
-                ))}
-              </div>
-            </div>
-
-
-
-
-
-            <div className="mb-3">
-              <label htmlFor="time" className="form-label">Time</label>
-              <input
-                type="time"
-                className="form-control"
-                id="time"
-                name="time"
-                value={newFlight.time}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-
+        {/* Flight Details Modal */}
+        {selectedFlight && (
+          <Modal show={isModalVisible} onHide={handleCloseModal} className="modal-details">
+            <Modal.Header closeButton>
+              <Modal.Title>Flight Details</Modal.Title>
+            </Modal.Header>
+            <Modal.Body className="modal-details-body">
+              <h5>Flight Information</h5>
+              <p>
+                <strong>Flight No:</strong> {selectedFlight?.flightNo || 'N/A'}
+              </p>
+              <p>
+                <strong>Time:</strong> {selectedFlight?.time || 'N/A'}
+              </p>
+              <p>
+                <strong>Days:</strong>{' '}
+                {selectedFlight?.days && selectedFlight.days.length > 0
+                  ? mapDaysToWeekdays(selectedFlight.days).join(', ')
+                  : 'N/A'}
+              </p>
+              <p>
+                <strong>Status:</strong> {selectedFlight?.isActive ? 'Active' : 'Inactive'}
+              </p>
+              <p>
+                <strong>Created At:</strong>{' '}
+                {new Date(selectedFlight?.createdAt).toLocaleString() || 'N/A'}
+              </p>
+              <p>
+                <strong>Updated At:</strong>{' '}
+                {new Date(selectedFlight?.updatedAt).toLocaleString() || 'N/A'}
+              </p>
+              <hr />
+              <h5>Airplane Details</h5>
+              <p>
+                <strong>Plane ID:</strong> {selectedFlight?.airplane?.planeId || 'N/A'}
+              </p>
+              <p>
+                <strong>Brand:</strong> {selectedFlight?.airplane?.brand || 'N/A'}
+              </p>
+              <p>
+                <strong>Model:</strong> {selectedFlight?.airplane?.model || 'N/A'}
+              </p>
+              <p>
+                <strong>Airline Name:</strong> {selectedFlight?.airplane?.airlineName || 'N/A'}
+              </p>
+              <p>
+                <strong>Total Seats:</strong> {selectedFlight?.airplane?.totalSeats || 'N/A'}
+              </p>
+              <p>
+                <strong>Economy Seats:</strong> {selectedFlight?.airplane?.economySeat || 'N/A'}
+              </p>
+              <p>
+                <strong>Premium Seats:</strong> {selectedFlight?.airplane?.premiumSeat || 'N/A'}
+              </p>
+              <p>
+                <strong>Business Seats:</strong> {selectedFlight?.airplane?.businessSeat || 'N/A'}
+              </p>
+              <p>
+                <strong>First Class Seats:</strong> {selectedFlight?.airplane?.firstClass || 'N/A'}
+              </p>
+              <p>
+                <strong>Status:</strong>{' '}
+                {selectedFlight?.airplane?.isActive ? 'Active' : 'Inactive'}
+              </p>
+              <hr />
+              <h5>Route Details</h5>
+              <p>
+                <strong>Departure Airport:</strong>{' '}
+                {selectedFlight?.route?.departure?.airportName || 'N/A'} (
+                {selectedFlight?.route?.departure?.airportCode || 'N/A'})
+              </p>
+              <p>
+                <strong>Departure City:</strong>{' '}
+                {selectedFlight?.route?.departure?.airportCity || 'N/A'}
+              </p>
+              <p>
+                <strong>Departure Country:</strong>{' '}
+                {selectedFlight?.route?.departure?.airportCountry || 'N/A'}
+              </p>
+              <p>
+                <strong>Destination Airport:</strong>{' '}
+                {selectedFlight?.route?.destination?.airportName || 'N/A'} (
+                {selectedFlight?.route?.destination?.airportCode || 'N/A'})
+              </p>
+              <p>
+                <strong>Destination City:</strong>{' '}
+                {selectedFlight?.route?.destination?.airportCity || 'N/A'}
+              </p>
+              <p>
+                <strong>Destination Country:</strong>{' '}
+                {selectedFlight?.route?.destination?.airportCountry || 'N/A'}
+              </p>
+              <p>
+                <strong>Distance (KM):</strong> {selectedFlight?.route?.distanceKM || 'N/A'}
+              </p>
+              <p>
+                <strong>Duration (Minutes):</strong>{' '}
+                {selectedFlight?.route?.durationMins || 'N/A'}
+              </p>
+              <p>
+                <strong>Status:</strong>{' '}
+                {selectedFlight?.route?.isActive ? 'Active' : 'Inactive'}
+              </p>
+            </Modal.Body>
             <Modal.Footer>
-              <Button variant="secondary" onClick={handleCloseAddModal}>
+              <Button variant="secondary" onClick={handleCloseModal}>
                 Close
               </Button>
-              <Button type="submit" variant="primary">
-                Add Flight
-              </Button>
             </Modal.Footer>
-          </form>
-        </Modal.Body>
-      </Modal>
-    </div>
-  );
+          </Modal>
+        )}
+
+        {/* Generate Commercial Flights Modal */}
+        <Modal show={isGenerateModalVisible} onHide={handleCloseGenerateModal}>
+          <Modal.Header closeButton>
+            <Modal.Title>
+              {flightToGenerate
+                ? `${flightToGenerate.flightNo} - ${flightToGenerate.route.departure.airportCode} (${flightToGenerate.route.destination.airportCode}) - ${mapDaysToWeekdays(
+                    flightToGenerate.days
+                  ).join(', ')}`
+                : 'Generate Commercial Flights'}
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <div>
+              <label>Start Date:</label>
+              <input
+                type="date"
+                value={dateRange.start}
+                onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
+              />
+            </div>
+            <div>
+              <label>End Date:</label>
+              <input
+                type="date"
+                value={dateRange.end}
+                onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
+              />
+            </div>
+            <div>
+              <label>Select Pricing:</label>
+              <select
+                value={selectedPrice}
+                onChange={(e) => setSelectedPrice(e.target.value)}
+              >
+                <option value="">Select Pricing</option>
+                {pricings.map((price) => (
+                  <option key={price._id} value={price._id}>
+                    {`${price.priceName}`}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleCloseGenerateModal}>
+              Close
+            </Button>
+            <Button variant="primary" onClick={handleGenerateCommercialFlights}>
+              Generate
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
+        {/* Add New Flight Modal */}
+        <Modal show={isAddModalVisible} onHide={handleCloseAddModal}>
+          <Modal.Header closeButton>
+            <Modal.Title>Add New Flight</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <form onSubmit={handleAddFlight}>
+              {/* Flight No */}
+              <div className="mb-3">
+                <label htmlFor="flightNo" className="form-label">
+                  Flight No
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="flightNo"
+                  name="flightNo"
+                  value={newFlight.flightNo}
+                  onChange={handleInputChange}
+                  required
+                  placeholder="Enter flight number"
+                />
+              </div>
+
+              {/* Airplane */}
+              <div className="mb-3">
+                <label htmlFor="airplane" className="form-label">
+                  Airplane
+                </label>
+                <select
+                  className="form-select"
+                  id="airplane"
+                  name="airplane"
+                  value={newFlight.airplane}
+                  onChange={handleInputChange}
+                  required
+                >
+                  <option value="">Select Airplane</option>
+                  {airplanes.map((plane) => (
+                    <option key={plane._id} value={plane._id}>
+                      {plane.planeId}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Route */}
+              <div className="mb-3">
+                <label htmlFor="route" className="form-label">
+                  Route
+                </label>
+                <select
+                  className="form-select"
+                  id="route"
+                  name="route"
+                  value={newFlight.route}
+                  onChange={handleInputChange}
+                  required
+                >
+                  <option value="">Select Route</option>
+                  {routes.map((route) => (
+                    <option key={route._id} value={route._id}>
+                      {`${route.departure.airportCity} (${route.departure.airportCode}) - ${route.destination.airportCity} (${route.destination.airportCode})`}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Days */}
+              <div className="mb-3">
+                <label className="form-label">Days</label>
+                <div className="toggle-button-group mb-3">
+                  {[
+                    { name: 'Sun', value: '1' },
+                    { name: 'Mon', value: '2' },
+                    { name: 'Tue', value: '3' },
+                    { name: 'Wed', value: '4' },
+                    { name: 'Thu', value: '5' },
+                    { name: 'Fri', value: '6' },
+                    { name: 'Sat', value: '7' },
+                  ].map((day, idx) => (
+                    <ToggleButton
+                      key={idx}
+                      id={`toggle-day-${idx}`}
+                      type="checkbox"
+                      variant="outline-success"
+                      value={day.value}
+                      checked={newFlight.days.includes(day.value)}
+                      onChange={handleDayChange}
+                      className="toggle-button"
+                    >
+                      {day.name}
+                    </ToggleButton>
+                  ))}
+                </div>
+              </div>
+
+              {/* Time */}
+              <div className="mb-3">
+                <label htmlFor="time" className="form-label">
+                  Time
+                </label>
+                <input
+                  type="time"
+                  className="form-control"
+                  id="time"
+                  name="time"
+                  value={newFlight.time}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+
+              <Modal.Footer>
+                <Button variant="secondary" onClick={handleCloseAddModal}>
+                  Close
+                </Button>
+                <Button type="submit" variant="primary">
+                  Add Flight
+                </Button>
+              </Modal.Footer>
+            </form>
+          </Modal.Body>
+        </Modal>
+      </>
+    )}
+  </div>
+);
+
+
 }
 
 

@@ -44,7 +44,7 @@ export default function AdminRouteDash() {
   useEffect(() => {
     const fetchRoutes = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/routes/all`);
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/routes/allactive`);
         const data = await response.json();
         setRoutes(data);
       } catch (error) {
@@ -54,7 +54,7 @@ export default function AdminRouteDash() {
 
     const fetchAirports = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/airports/all`);
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/airports/allactive`);
         const data = await response.json();
         setAirports(data);
       } catch (error) {

@@ -145,7 +145,7 @@ function GuestDetailsPage() {
         </div>
 
         {/* Final Guests display */}
-        <div>
+        {/* <div>
           <h3>Final Guests:</h3>
           <ul>
             {finalGuests.map((guest, index) => (
@@ -154,7 +154,7 @@ function GuestDetailsPage() {
               </li>
             ))}
           </ul>
-        </div>
+        </div> */}
       </div>
 
       {/* Modal for guest vs login with email input */}

@@ -29,7 +29,7 @@ const DealsCards = () => {
             <div
               key={deal.id}
               className="deals-card"
-              onClick={() => handleCardClick(deal.title)}
+              // onClick={() => handleCardClick(deal.title)}
               data-aos="fade-up"
               data-aos-delay="200"
             >

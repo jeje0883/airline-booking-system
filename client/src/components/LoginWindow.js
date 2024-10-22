@@ -147,7 +147,7 @@ function LoginWindow({ isVisible, onClose, handleSignUpClick, initialEmail }) { 
           </button>
         </form>
 
-        <div className="separator">
+        {/* <div className="separator">
           <span>Or</span>
         </div>
 
@@ -168,7 +168,7 @@ function LoginWindow({ isVisible, onClose, handleSignUpClick, initialEmail }) { 
             />
             <span>Login with Apple</span>
           </button>
-        </div>
+        </div> */}
 
         <div className="signup-link">
           <span>
