@@ -9,7 +9,7 @@ module.exports.createAccessToken = (user) => {
 		isAdmin : user.isAdmin
 	};
 
-	console.log("Creating access token with data:", data);
+	// console.log("Creating access token with data:", data);
 
 	return jwt.sign(data, process.env.JWT_SECRET_KEY, {});
 };

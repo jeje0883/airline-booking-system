@@ -12,7 +12,7 @@ const port = process.env.PORT || 3000;
 const mongodb = process.env.MONGODB_STRING;
 // const secret = process.env.clientSecret;
 const frontend = process.env.FRONTEND;
-console.log("frontend ", frontend);
+// console.log("frontend ", frontend);
 
 mongoose.connect(mongodb)
 .then(() => {
