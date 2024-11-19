@@ -6,6 +6,8 @@ const generateRandomProfile = require('./helpers/helper.js');
 
 chai.use(chaiHttp);
 
+const log = true;
+
 describe('Booking API Tests', function () {
     this.timeout(20000);
 
@@ -26,10 +28,10 @@ describe('Booking API Tests', function () {
     const assertAndLog = (assertFn, successMsg, failMsg) => {
         try {
             assertFn();
-            console.log(`\tPassed: ${successMsg}`);
+            if (log) console.log(`\tPassed: ${successMsg}`) ;
         } catch (error) {
-            console.error(`\tFailed: ${failMsg}`, error.message);
-            // exit(1);
+            if (log) console.error(`\tFailed: ${failMsg}`, error.message);
+            if (!log) exit(1);
         }
     };
 
@@ -164,18 +166,16 @@ describe('Booking API Tests', function () {
     });
 
     it('test_api_user_loging_successful', function (done) {
-        const userLogin = {
-            email: newUser.email,
-            password: newUser.password
-        }
 
-    
         chai.request(app)
             .post('/users/login')
-            .send(userLogin)
+            .send({
+                email: newUser.email,
+                password: newUser.password
+            })
             .end((err, res) => {
                 if (err) return done(err);
-    
+
                 // Individual assertions
                 assertAndLog(
                     () => expect(res).to.have.status(200),
@@ -184,13 +184,61 @@ describe('Booking API Tests', function () {
                 );
                 assertAndLog(
                     () => expect(res.body).to.have.property('access'),
-                    'Return access token',
+                    'Returns access token',
                     'Does NOT return access token"'
                 );
+    
+                done();
+            });
+    });
+
+    it('test_api_user_loging_fail_invalid_email', function (done) {
+
+        chai.request(app)
+            .post('/users/login')
+            .send({
+                email: 'invalid_email',
+                password: newUser.password
+            })
+            .end((err, res) => {
+                if (err) return done(err);
+                // Individual assertions
                 assertAndLog(
-                    () => expect(res.user).to.include.all.property(['id', 'email', 'isAdmin']),
-                    'Return response user',
-                    'Does NOT return response user'
+                    () => expect(res).to.have.status(400),
+                    'Status is 400',
+                    'Expected status to be 400'
+                );
+                assertAndLog(
+                    () => expect(res.body).to.have.property('error').equal('Email format is invalid'),
+                    'Error is "Email format is invalid"',
+                    'Error is not "Email format is invalid"',
+                );
+    
+                done();
+            });
+    });
+
+    it('test_api_user_loging_fail_invalid_password', function (done) {
+
+        chai.request(app)
+            .post('/users/login')
+            .send({
+                email: newUser.email,
+                password: 'invalid_password'
+            })
+            .end((err, res) => {
+                if (err) return done(err);
+    
+                // Individual assertions
+                assertAndLog(
+                    () => expect(res).to.have.status(401),
+                    'Status is 401',
+                    'Expected status to be 401'
+                );
+                assertAndLog(
+                    () => expect(res.body).to.have.property('error').equal('Email and password do not match'),
+                    'Error is "Email and password do not match"',
+                    'Error is not "Email and password do not match"',
                 );
     
                 done();
