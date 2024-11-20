@@ -42,6 +42,7 @@ describe('Booking API Tests', function () {
             .end((err, res) => {
                 if (err) return done(err);
 
+                console.log(res.body.user);
                 // Individual assertions
                 assertAndLog(
                     () => expect(res).to.have.status(201),
@@ -57,6 +58,17 @@ describe('Booking API Tests', function () {
                     () => expect(res.body).to.have.property('message').equal('Registered Successfully'),
                     'Message is "Registered Successfully"',
                     'Message is not "Registered Successfully"'
+                );
+                assertAndLog(
+                    () => expect(res.body).to.have.property('user'),
+                    'Response has user details',
+                    'Response no has user details'
+                );
+
+                assertAndLog(
+                    () => expect(res.body.user).to.include.all.keys(['firstName', 'lastName', 'email', 'phoneNo']),
+                    'Response user details has all the properties',
+                    'Response user details does not have all the properties'
                 );
 
                 done();
@@ -165,13 +177,14 @@ describe('Booking API Tests', function () {
             });
     });
 
-    it('test_api_user_loging_successful', function (done) {
+    it('test_api_user_login_successful', function (done) {
+        let user = { ...newUser};
 
         chai.request(app)
             .post('/users/login')
             .send({
-                email: newUser.email,
-                password: newUser.password
+                email: user.email,
+                password: user.password
             })
             .end((err, res) => {
                 if (err) return done(err);
@@ -192,13 +205,14 @@ describe('Booking API Tests', function () {
             });
     });
 
-    it('test_api_user_loging_fail_invalid_email', function (done) {
+    it('test_api_user_login_fail_invalid_email', function (done) {
+        let user = { ...newUser };
 
         chai.request(app)
             .post('/users/login')
             .send({
                 email: 'invalid_email',
-                password: newUser.password
+                password: user.password
             })
             .end((err, res) => {
                 if (err) return done(err);
@@ -218,12 +232,13 @@ describe('Booking API Tests', function () {
             });
     });
 
-    it('test_api_user_loging_fail_invalid_password', function (done) {
+    it('test_api_user_login_fail_invalid_password', function (done) {
+        let user = { ...newUser };
 
         chai.request(app)
             .post('/users/login')
             .send({
-                email: newUser.email,
+                email: user.email,
                 password: 'invalid_password'
             })
             .end((err, res) => {
@@ -239,6 +254,58 @@ describe('Booking API Tests', function () {
                     () => expect(res.body).to.have.property('error').equal('Email and password do not match'),
                     'Error is "Email and password do not match"',
                     'Error is not "Email and password do not match"',
+                );
+    
+                done();
+            });
+    });
+
+    it('test_api_user_login_fail_no_user_found', function (done) {
+        let user = { ... newUser };
+
+        chai.request(app)
+            .post('/users/login')
+            .send(user)
+            .end((err, res) => {
+                if (err) return done(err);
+    
+                // Individual assertions
+                assertAndLog(
+                    () => expect(res).to.have.status(404),
+                    'Status is 404',
+                    'Expected status to be 404'
+                );
+                assertAndLog(
+                    () => expect(res.body).to.have.property('error').equal('No email found'),
+                    'Error is "No email found"',
+                    'Error is not "No email found"',
+                );
+    
+                done();
+            });
+    });
+
+    it('test_api_user_details_success', function (done) {
+
+        chai.request(app)
+            .post('/users/login')
+            .send({
+                email: newUser.email,
+                password: newUser.email
+            })
+            .end((err, res) => {
+                if (err) return done(err);
+    
+                // Individual assertions
+                assertAndLog(
+                    () => expect(res).to.have.status(404),
+                    'Status is 404',
+                    'Expected status to be 404'
+                );
+                assertAndLog(
+                    () => expect(res.body).to.have.property('error').equal('No email found'),
+                    'Error is "No email found"',
+                    'Error is not "No email found"',
                 );
     
                 done();
