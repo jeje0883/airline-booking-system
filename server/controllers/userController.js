@@ -9,15 +9,19 @@ const { errorHandler } = auth;
 
 module.exports.registerUser = async (req, res) => {
     try {
-        // Check if the email already exists
-        const existingUser = await User.findOne({ email: req.body.email });
-        if (existingUser) {
-            return res.status(409).send({ 
-                error: 'Email already in use' 
+
+        if (req.body.phoneNo.length !== 11) {
+            return res.status(400).send({ 
+                error: 'Phone number is invalid' 
             });
         }
 
-        // Validate email format
+        if (req.body.password.length < 8) {
+            return res.status(400).send({ 
+                error: 'Password must be at least 8 characters long' 
+            });
+        }
+
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(req.body.email)) {
             return res.status(400).send({ 
@@ -25,17 +29,10 @@ module.exports.registerUser = async (req, res) => {
             });
         }
 
-        // Validate phone number length
-        if (req.body.phoneNo.length !== 11) {
-            return res.status(400).send({ 
-                error: 'Phone number is invalid' 
-            });
-        }
-
-        // Validate password length
-        if (req.body.password.length < 8) {
-            return res.status(400).send({ 
-                error: 'Password must be at least 8 characters long' 
+        const existingUser = await User.findOne({ email: req.body.email });
+        if (existingUser) {
+            return res.status(409).send({ 
+                error: 'Email already in use' 
             });
         }
 
@@ -179,58 +176,6 @@ module.exports.checkEmailExists = (req, res) => {
     }
 };
 
-
-
-
-
-module.exports.enroll = (req, res) => {
-
-    // user's id from the decoded token after verify()
-    console.log("user token's id")
-    console.log(req.user.id);
-
-    // enrolled courses of the user from the request body
-    console.log(req.body.enrolledCourses);
-
-    if(req.user.isAdmin){
-        return res.status(403).send({ message: 'Admin is forbidden' });
-    }
-
-    let newEnrollment = new Enrollment({
-        userId: req.user.id,
-        enrolledCourses: req.body.enrolledCourses,
-        totalPrice: req.body.totalPrice
-    });
-
-
-    return newEnrollment.save().then(enrolled =>{
-        return res.status(201).send({
-            success: true,
-            message: 'Enrolled successfully'
-        });
-    })
-    .catch(error => errorHandler(error, req, res));
-
-}
-
-//[SECTION] Activity: Get enrollments
-/*
-    Steps:
-    1. Use the mongoose method "find" to retrieve all enrollments for the logged in user
-    2. If no enrollments are found, return a 404 error. Else return a 200 status and the enrollment record
-*/
-module.exports.getEnrollments = (req, res) => {
-    return Enrollment.find({userId : req.user.id})
-        .then(enrollments => {
-            if (enrollments.length > 0) {
-                return res.status(200).send(enrollments);
-            }
-            return res.status(404).send({
-                message: 'No enrolled courses'
-            });
-        })
-        .catch(error => errorHandler(error, req, res));
-};
 
 module.exports.updatePassword = async (req, res) => {
   try {

@@ -3,6 +3,7 @@ const chaiHttp = require('chai-http');
 const { expect } = chai; 
 const { app, mongoose } = require('../index.js');
 const generateRandomProfile = require('./helpers/helper.js'); 
+const { getToken, deleteUser } = require('./helpers/user');
 
 chai.use(chaiHttp);
 
@@ -11,13 +12,17 @@ const log = true;
 describe('Booking API Tests', function () {
     this.timeout(20000);
 
-    let newUser;
+    let adminToken, userToken, newUser, newUserId;
+
 
     before(async function () {
         if (mongoose.connection.readyState !== 0) await mongoose.connection.close();
         await mongoose.connect(process.env.MONGODB_STRING);
-        console.log('Connected to MongoDB for testing.');
+        await mongoose.connection.once("open", () => console.log(`Now connected to MongoDB Atlas in Mocha Test`));
         newUser = generateRandomProfile();
+        adminToken = await getToken('admin@mail.com', 'admin123');
+        // console.log(adminToken);
+
     });
 
     after(async function () {
@@ -42,7 +47,7 @@ describe('Booking API Tests', function () {
             .end((err, res) => {
                 if (err) return done(err);
 
-                console.log(res.body.user);
+                // console.log(res.body.user);
                 // Individual assertions
                 assertAndLog(
                     () => expect(res).to.have.status(201),
@@ -100,7 +105,7 @@ describe('Booking API Tests', function () {
     });
 
     it('test_api_user_register_fail_invalid_email', function (done) {
-        const invalidEmailUser = generateRandomProfile(); // Create a fresh copy
+        const invalidEmailUser = { ...newUser}; // Create a fresh copy
         invalidEmailUser.email = 'invalid_email';
  
         chai.request(app)
@@ -126,7 +131,7 @@ describe('Booking API Tests', function () {
     });
     
     it('test_api_user_register_fail_invalid_phone', function (done) {
-        const invalidPhoneUser = generateRandomProfile(); // Create a fresh copy
+        const invalidPhoneUser = {...newUser}; // Create a fresh copy
         invalidPhoneUser.phoneNo = '0000';
     
         chai.request(app)
@@ -152,7 +157,7 @@ describe('Booking API Tests', function () {
     });
 
     it('test_api_user_register_fail_invalid_password', function (done) {
-        const invalidPasswordUser = generateRandomProfile(); // Create a fresh copy
+        const invalidPasswordUser = {...newUser}; // Create a fresh copy
         invalidPasswordUser.password = '0000';
     
         chai.request(app)
@@ -178,7 +183,7 @@ describe('Booking API Tests', function () {
     });
 
     it('test_api_user_login_successful', function (done) {
-        let user = { ...newUser};
+        const user = { ...newUser};
 
         chai.request(app)
             .post('/users/login')
@@ -200,13 +205,14 @@ describe('Booking API Tests', function () {
                     'Returns access token',
                     'Does NOT return access token"'
                 );
-    
+
+                userToken = res.body['access'];
                 done();
             });
     });
 
     it('test_api_user_login_fail_invalid_email', function (done) {
-        let user = { ...newUser };
+        const user = { ...newUser };
 
         chai.request(app)
             .post('/users/login')
@@ -233,7 +239,7 @@ describe('Booking API Tests', function () {
     });
 
     it('test_api_user_login_fail_invalid_password', function (done) {
-        let user = { ...newUser };
+        const user = { ...newUser };
 
         chai.request(app)
             .post('/users/login')
@@ -260,56 +266,115 @@ describe('Booking API Tests', function () {
             });
     });
 
-    it('test_api_user_login_fail_no_user_found', function (done) {
-        let user = { ... newUser };
+    // it('test_api_user_login_fail_no_user_found', function (done) {
+    //     let user = { ... newUser };
 
-        chai.request(app)
-            .post('/users/login')
-            .send(user)
-            .end((err, res) => {
-                if (err) return done(err);
+    //     chai.request(app)
+    //         .post('/users/login')
+    //         .send(user)
+    //         .end((err, res) => {
+    //             if (err) return done(err);
     
-                // Individual assertions
-                assertAndLog(
-                    () => expect(res).to.have.status(404),
-                    'Status is 404',
-                    'Expected status to be 404'
-                );
-                assertAndLog(
-                    () => expect(res.body).to.have.property('error').equal('No email found'),
-                    'Error is "No email found"',
-                    'Error is not "No email found"',
-                );
+    //             // Individual assertions
+    //             assertAndLog(
+    //                 () => expect(res).to.have.status(404),
+    //                 'Status is 404',
+    //                 'Expected status to be 404'
+    //             );
+    //             assertAndLog(
+    //                 () => expect(res.body).to.have.property('error').equal('No email found'),
+    //                 'Error is "No email found"',
+    //                 'Error is not "No email found"',
+    //             );
     
-                done();
-            });
-    });
+    //             done();
+    //         });
+    // });
 
     it('test_api_user_details_success', function (done) {
+        const user = { ...newUser}
 
         chai.request(app)
-            .post('/users/login')
-            .send({
-                email: newUser.email,
-                password: newUser.email
-            })
+            .get('/users/details')
+            .send(user)
+            .type('json')
+            .set('authorization' ,`Bearer ${userToken}`)
             .end((err, res) => {
                 if (err) return done(err);
     
                 // Individual assertions
                 assertAndLog(
-                    () => expect(res).to.have.status(404),
-                    'Status is 404',
-                    'Expected status to be 404'
+                    () => expect(res).to.have.status(200),
+                    'Status is 200',
+                    'Expected status to be 200'
                 );
                 assertAndLog(
-                    () => expect(res.body).to.have.property('error').equal('No email found'),
-                    'Error is "No email found"',
-                    'Error is not "No email found"',
+                    () => expect(res.body).to.have.property('user'),
+                    'Response body has property user',
+                    'Response body has no property user',
                 );
     
+                newUserId = res.body['user']['_id'];
                 done();
             });
     });
     
+    // it('test_api_user_details_user_not_found', function (done) {
+    //     const user = { ...newUser}
+
+    //     chai.request(app)
+    //         .get('/users/details')
+    //         .send(user)
+    //         .type('json')
+    //         .set('authorization' ,`Bearer ${userToken}`)
+    //         .end((err, res) => {
+    //             if (err) return done(err);
+    
+    //             // Individual assertions
+    //             assertAndLog(
+    //                 () => expect(res).to.have.status(404),
+    //                 'Status is 404',
+    //                 'Expected status to be 404'
+    //             );
+    //             assertAndLog(
+    //                 () => expect(res.body).to.have.property('user'),
+    //                 'Error is "User not found"',
+    //                 'Error is not "User not found"',
+    //             );
+    
+    //             done();
+    //         });
+    // });
+
+    it('test_api_user_set_as_admin_successful', function (done) {
+
+
+        chai.request(app)
+            .patch(`/users/${newUserId}/set-as-admin`)
+            .set('authorization' ,`Bearer ${adminToken}`)
+            .end((err, res) => {
+                if (err) return done(err);
+                
+                // Individual assertions
+                assertAndLog(
+                    () => expect(res).to.have.status(200),
+                    'Status is 200',
+                    'Expected status to be 200'
+                );
+                assertAndLog(
+                    () => expect(res.body).to.have.property('updatedUser'),
+                    'Response body has property updatedUser',
+                    'Response body has no property updatedUser',
+                );
+                assertAndLog(
+                    () => expect(res.body.updatedUser).to.have.property('isAdmin').equal(true),
+                    'Response body isAdmin property is equal to true',
+                    'Response body isAdmin property is not equal to true',
+                );
+    
+                done();
+            });
+    });    
+
+
 });

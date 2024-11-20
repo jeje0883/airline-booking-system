@@ -19,9 +19,7 @@ router.patch('/update-password', verify, userController.updatePassword);
 
 router.post("/check-email", userController.checkEmailExists);
 
-router.post("/enroll", verify, userController.enroll);
 
-router.get('/get-enrollments', verify, userController.getEnrollments);
 
 
 /*

@@ -22,27 +22,27 @@ module.exports.verify = (req, res, next) => {
 	if (openPaths.includes(req.path) || req.path.startsWith('/static')) {
 	  return next();
 	}
-	console.log("Verifying token from headers:", req.headers.authorization);
+	// console.log("Verifying token from headers:", req.headers.authorization);
 
 	let token = req.headers.authorization;
 
 	if (typeof token === "undefined") {
-		console.log("No token found.");
+		// console.log("No token found.");
 		return res.send({ auth: "Failed. No Token" });
 	} else {
 		// Trim token prefix "Bearer"
 		token = token.slice(7, token.length);
-		console.log("Extracted token:", token);
+		// console.log("Extracted token:", token);
 
 		jwt.verify(token, process.env.JWT_SECRET_KEY, function (err, decodedToken) {
 			if (err) {
-				console.log("Token verification failed with error:", err.message);
+				// console.log("Token verification failed with error:", err.message);
 				return res.status(403).send({
 					auth: "Failed",
 					message: err.message
 				});
 			} else {
-				console.log("Token successfully verified. Decoded token data:", decodedToken);
+				// console.log("Token successfully verified. Decoded token data:", decodedToken);
 
 				req.user = decodedToken;
 				next();
@@ -53,13 +53,13 @@ module.exports.verify = (req, res, next) => {
 
 // Verify Admin
 module.exports.verifyAdmin = (req, res, next) => {
-	console.log("Verifying if user is admin. User data:", req.user);
+	// console.log("Verifying if user is admin. User data:", req.user);
 
 	if (req.user.isAdmin) {
-		console.log("User is admin, proceeding.");
+		// console.log("User is admin, proceeding.");
 		next();
 	} else {
-		console.log("User is not admin, access denied.");
+		// console.log("User is not admin, access denied.");
 		return res.status(403).send({
 			auth: "Failed",
 			message: "Action Forbidden"
