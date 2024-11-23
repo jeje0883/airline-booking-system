@@ -82,6 +82,11 @@ app.use("/destinations", destinationRoutes);
 
 
 
+app.get('/', (req, res) => {
+    res.status(200).send('Welcome to the Flight Management API');
+});
+
+
 // Initialize the server
 if (require.main === module) {
     app.listen(port, () => {

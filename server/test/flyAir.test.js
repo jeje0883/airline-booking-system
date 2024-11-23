@@ -7,7 +7,7 @@ const { getToken, deleteUser } = require('./helpers/user');
 
 chai.use(chaiHttp);
 
-const log = true;
+const log = true; //flag for verbose logging of individual test to console
 
 describe('Booking API Tests', function () {
     this.timeout(20000);
@@ -347,8 +347,6 @@ describe('Booking API Tests', function () {
     // });
 
     it('test_api_user_set_as_admin_successful', function (done) {
-
-
         chai.request(app)
             .patch(`/users/${newUserId}/set-as-admin`)
             .set('authorization' ,`Bearer ${adminToken}`)
